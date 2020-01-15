@@ -1,0 +1,28 @@
+- name: Download and unpack Tomcat
+  unarchive:
+      src: "{{tomcat_url}}/v{{tomcat_version}}/bin/apache-tomcat-{{tomcat_version}}.tar.gz"
+      dest: /opt/
+      owner: vagrant
+      group: vagrant
+      remote_src: yes
+  ignore_errors: no
+
+- name: Copy Tomcat configuration file
+  copy:
+    src: files/apache-tomcat/conf/server.xml
+    dest: "{{tomcat_home}}/conf/"
+
+- name: Start the tomcat service
+  template: 
+    src: files/apache-tomcat/service/tomcat.service.j2 
+    dest: /etc/systemd/system/tomcat.service
+    owner: vagrant 
+    group: vagrant 
+    mode: 0644
+
+- name: Enable tomcat startup
+  systemd:
+    name: tomcat
+    state: restarted
+    enabled: yes
+    daemon_reload: yes

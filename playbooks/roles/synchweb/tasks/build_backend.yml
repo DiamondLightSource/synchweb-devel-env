@@ -1,0 +1,64 @@
+
+# Install and setup composer
+- name: Install PHP Composer
+  script: files/composer/install_composer.sh
+
+- name: Make Composer available for future tasks...
+  command: mv composer.phar /usr/local/bin/composer
+  become: true
+
+- name: Set permissions on global composer executable
+  file:
+    path: /usr/local/bin/composer
+    mode: a+x
+  become: true
+
+- name: Check if SynchWeb build uses composer
+  stat:
+    path: "{{synchweb_home}}/api/composer.json"
+  register: use_composer
+
+- name: Install dependencies
+  composer:
+    command: install
+    working_dir: "{{synchweb_home}}/api"
+  when: use_composer.stat.exists == true
+
+#
+# If not using composer then we copy dependencies across from archive
+#
+- name: Copy dependencies across (until php composer ready)
+  copy: src=files/SynchWeb/lib-2018-11-14.zip dest="{{ synchweb_home}}/api/" owner=vagrant group=vagrant mode=0644
+  when: use_composer.stat.exists == false
+
+- name: Unarchive the dependencies
+  unarchive:
+    src: "{{ synchweb_home}}/api/lib-2018-11-14.zip"
+    dest: "{{ synchweb_home}}/api/"
+    remote_src: yes
+  when: use_composer.stat.exists == false
+
+# Finally set the ownership to vagrant.
+- name: Change ownership to vagrant
+  file:
+      path: "{{ synchweb_home }}/api/vendor"
+      owner: vagrant
+      group: vagrant
+      recurse: yes
+
+## Fixes...
+- name: Ensure mpdf writable cache
+  file:
+    path: "{{synchweb_home}}/api/vendor/mpdf/mpdf/ttfontdata"
+    state: directory
+    group: vagrant
+    mode: o+w
+  when: use_composer.stat.exists == true
+
+- name: Ensure HTMLPurifier writable cache
+  file:
+    path: "{{synchweb_home}}/api/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer/HTML"
+    state: directory
+    group: vagrant
+    mode: o+w
+  when: use_composer.stat.exists == true

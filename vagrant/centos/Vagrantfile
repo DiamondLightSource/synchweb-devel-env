@@ -1,0 +1,31 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+#
+# Changed base box from centos/7 to geerlingguy to include guest additions for shared folder.
+Vagrant.configure("2") do |config|
+  config.vm.box = "geerlingguy/centos7"
+
+  config.vm.define "lamp" do |lamp|
+    # accessing "localhost:8080" will access port 80 on the guest machine.
+    lamp.vm.network "forwarded_port", guest: 80, host: 9080
+    lamp.vm.network "forwarded_port", guest: 3306, host: 3306
+    lamp.vm.network "private_network", ip: "192.168.33.10"
+
+    # Ports required for CAS role
+    lamp.vm.network "forwarded_port", guest: 8080, host: 8080
+    lamp.vm.network "forwarded_port", guest: 8443, host: 8443
+
+    # Synched folder does not play nicely with webpack node-sass package
+    # lamp.vm.synced_folder "src/", "/var/www/sites/"
+
+    # Comment out next two definitions if on Windows
+    lamp.vm.provision "ansible" do |ansible|
+      ansible.playbook = "../../playbooks/standalone.yml"
+    end
+  end
+end

@@ -1,0 +1,30 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+#
+# Changed base box from debian/jessie64 to use geerlingguy for guest additions/shared folders.
+Vagrant.configure("2") do |config|
+  config.vm.box = "geerlingguy/debian8"
+
+  config.vm.define "lamp" do |lamp|
+    lamp.vm.network "forwarded_port", guest: 80, host: 9080
+    lamp.vm.network "private_network", ip: "192.168.33.10"
+
+    lamp.vm.hostname="lamp"
+
+# Annoying hack for bare bones ubuntu (no python installed)
+#    lamp.vm.provision "shell" do |sh|
+#      sh.inline = "apt-get install -y python"
+#    end
+
+    lamp.vm.synced_folder "src/", "/var/www/sites/"
+
+#    lamp.vm.provision "ansible" do |ansible|
+#      ansible.playbook = "../playbooks/standalone.yml"
+#    end
+  end
+end

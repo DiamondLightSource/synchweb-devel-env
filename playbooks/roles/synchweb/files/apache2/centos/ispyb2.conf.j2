@@ -1,0 +1,9 @@
+<VirtualHost *:80>
+	ServerAdmin ispyb2dev@diamond.ac.uk
+	DocumentRoot "{{ synchweb_home }}" 
+
+	# Redirect to https
+	RewriteEngine on
+	RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [R=301]
+
+</VirtualHost>

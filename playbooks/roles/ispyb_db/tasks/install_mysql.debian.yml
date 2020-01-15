@@ -1,0 +1,17 @@
+---
+# Install MySQL (MariaDB) packages
+  - name: Add MariaDB repository
+    package: name=mariadb-server state=present
+
+# Install the client for debugging purposes
+  - name: Install MariaDB Client
+    package: name=mariadb-client state=present
+
+  - name: Install MySQL Python for remote configuration
+    package: name=python-mysqldb state=present
+
+  - name: Start the MariaDB (MySQL) service
+    service:
+      name: mysql
+      state: started
+      enabled: yes

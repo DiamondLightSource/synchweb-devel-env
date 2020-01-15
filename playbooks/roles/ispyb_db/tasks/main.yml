@@ -1,0 +1,12 @@
+# Imclude the OS specific playbooks
+- include_tasks: install_mysql.centos.yml
+  when: ansible_distribution == "CentOS"
+
+- include_tasks: install_mysql.debian.yml
+  when: ansible_distribution == "Debian" or ansible_distribution == "Ubuntu"
+
+# Common configuration (admin passwords etc)
+- include_tasks: setup_mysql_db.yml
+
+# Setup the ISPyB database and priviliges
+- include_tasks: setup_ispyb.yml

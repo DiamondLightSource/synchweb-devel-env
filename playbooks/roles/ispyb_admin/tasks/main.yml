@@ -1,0 +1,31 @@
+- name: Install git
+  package: name=git state=latest
+
+- name: Install virtualenv
+  package: name=python-virtualenv state=latest
+
+- name: Ensure Build dir exists
+  file:
+    path: "{{ build_dir }}"
+    state: directory
+    owner: "{{ local_user }}"
+    group: "{{ local_group }}"
+
+- name: Checkout code
+  git:
+    repo: "{{ repo }}"
+    dest: "{{ build_dir }}"
+  ignore_errors: true
+  become_user: "{{ local_user }}"
+
+# This task sets up virtualenv for us...
+- name: Install dependencies
+  pip:
+    requirements: "{{ build_dir }}/requirements.txt"
+    virtualenv: "/home/vagrant/flask-env"
+  become_user: "{{ local_user }}"
+
+- name: Update database config file
+  template: 
+    src: config.py.j2 
+    dest: "{{ build_dir }}/config.py" 

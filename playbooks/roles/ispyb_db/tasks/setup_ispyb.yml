@@ -1,0 +1,43 @@
+# Provision ISPyB Database for the MariaDB Server
+  - name: Create ISPyB database table
+    mysql_db:
+      name: "{{ ispyb_db_name }}"
+      state: present
+
+  - name: Setup ISPyB admin users
+    mysql_user:
+      name: "{{ispyb_db_user}}"
+      password: "{{ ispyb_db_password }}"
+      state: present
+      host: '%'
+      priv: '{{ ispyb_db_name }}.*:ALL'
+
+  - name: Reload Privilege Tables
+    command: 'mysql -ne "{{ item }}"'
+    with_items:
+      - FLUSH PRIVILEGES
+    changed_when: False
+
+  - name: Make sure git is installed
+    package:
+      name: git
+      state: latest
+
+  - name: Checkout ispyb-database tables, routines, and sample data
+    git:
+      repo: "{{ ispyb_db_repo }}"
+      dest: /tmp/ispyb-database
+      version: "{{ ispyb_db_version }}"
+    ignore_errors: False
+
+  - name: Import ISPyB tables, routines, and sample data
+    mysql_db:
+      state: import
+      name: "{{ ispyb_db_name }}"
+      target: "/tmp/ispyb-database/schema/{{ item }}.sql"
+    with_items:
+      - tables
+      - lookups
+      - data
+      - routines
+    ignore_errors: False

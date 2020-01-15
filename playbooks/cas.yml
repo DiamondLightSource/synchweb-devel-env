@@ -1,0 +1,7 @@
+# Provion file for the CAS Authentication Server
+# Also acts as filesystem via nfs
+- hosts: cas
+  become: yes
+  roles:
+    - cas
+    - nfs

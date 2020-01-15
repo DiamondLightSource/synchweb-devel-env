@@ -1,0 +1,46 @@
+
+# Think that on install there is no root password set,
+# so we need to change this (at least)
+
+- name: Change the default root password
+  command: mysqladmin -u root password {{mysql_root_password}}
+
+- name: Add credentials for root user my.cnf
+  template: src=files/mysql/my.cnf.j2 dest=/root/.my.cnf owner=root group=root mode=0600
+
+- name: Setup admin users and hosts
+  mysql_user:
+    name: root
+    password: "{{ mysql_root_password }}"
+    state: present
+    host: "{{ item }}"
+  with_items:
+    - localhost
+    - 127.0.0.1
+    - ::1
+
+- name: Remove anonymous users
+  command: 'mysql -ne "{{ item }}"'
+  with_items:
+    - DELETE FROM mysql.user WHERE user=''
+  changed_when: False
+
+- name: Disallow remote root login
+  command: 'mysql -ne "{{ item }}"'
+  with_items:
+    - DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1')
+  changed_when: false
+
+- name: Remove test database
+  command: 'mysql -ne "{{ item }}"'
+  with_items:
+    - DROP DATABASE test
+    - DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'
+  changed_when: False
+  ignore_errors: True
+
+- name: Reload Privilege Tables
+  command: 'mysql -ne "{{ item }}"'
+  with_items:
+    - FLUSH PRIVILEGES
+  changed_when: False

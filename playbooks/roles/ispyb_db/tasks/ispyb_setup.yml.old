@@ -1,0 +1,100 @@
+---
+# Setup ISPyB database tables
+  - name: Create ISPyB database tables
+    mysql_db:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      -  ispyb
+  
+  - name: Setup ISPyB users (needs updating...)
+    mysql_user: 
+      name: "{{ ispyb_user }}"
+      password: "{{ ispyb_password }}"
+      state: present
+      host: '%'
+
+  - name: Reload Privilege Tables
+    command: 'mysql -ne "{{ item }}"'
+    with_items:
+      - FLUSH PRIVILEGES
+    changed_when: False
+
+  - name: Ensure SQL directory is present
+    file: 
+      path: "/tmp/sql/updates"
+      state: directory
+
+  - name: Copy SQL schema scripts to guest
+    copy: 
+      src: "files/sql/{{ item }}"
+      dest: "/tmp/sql"
+    with_items:
+      - "ispybdev-20160422.sql"
+      - "grants_April.sql"
+
+#
+# Not all these worked 
+# 
+# 20160630_DBMerging-1.sql
+# 20160701_Container_trigger_new_col.sql
+# 20160801_Container_personId.sql
+# 20160803_externalId_binary.sql
+#
+  - name: Copy SQL update scripts to guest
+    copy: 
+      src: "files/sql/updates/{{ item }}"
+      dest: "/tmp/sql/updates"
+    with_items:
+      - "20160429_PDB_contents.sql"
+      - "20160429_Protein_sequence.sql"
+      - "20160513_SW_onceToken.sql"
+      - "20160623_AutoProcScalingStatistics_ccAnomalous.sql"
+      - "20160623_Container_rename_constraint.sql"
+      - "20160623_DataCollection_rename_screeningOrigId.sql"
+      - "20160623_GridInfo_DCG_FK.sql"
+      - "20160624_PDB_code.sql"
+      - "20160630_BeamLineSetup_drop_old_cols.sql"
+      - "20160630_DBMerging-1.sql"
+      - "20160630_ScreeningStrategyWedge_chi.sql"
+      - "20160701_Container_trigger_new_col.sql"
+      - "20160720_Session_has_Person-role.sql"
+      - "20160728_ContainerInspection_completedTimeStamp.sql"
+      - "20160801_Container_personId.sql"
+      - "20160803_externalId_binary.sql"
+
+# Important to note this task saves the list of files on the remote host
+# we use this later to import the SQL settings
+  - name: Find remote update files copied
+    find:
+      paths: "/tmp/sql/updates"
+      patterns: "*.sql"
+      recurse: "yes"
+    register: sql_files
+
+  - name: Import ispyb schema 
+    mysql_db:
+      state: import
+      name: ispyb
+      target: "{{ item }}"
+    with_items:
+      - "/tmp/sql/ispybdev-20160422.sql"
+
+  - name: Import ispyb database updates
+    mysql_db:
+      state: import
+      name: ispyb
+      target: "{{ item.path }}"
+    with_items:
+      - "{{ sql_files.files }}"
+
+  - name: Import ispyb grant changes
+    mysql_db:
+      state: import
+      name: ispyb
+      target: "{{ item }}"
+    with_items:
+      - "/tmp/sql/grants_April.sql"
+
+
+

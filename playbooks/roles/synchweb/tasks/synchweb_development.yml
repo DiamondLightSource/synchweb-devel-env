@@ -1,0 +1,84 @@
+# Package Name for git is the same in all distributions
+  - name: Install Git
+    package: name=git state=latest
+
+  - name: Install Unzip
+    package: name=unzip state=latest
+
+  - name: Ensure SynchWeb dir exists
+    file:
+      path: "{{ synchweb_home }}"
+      state: directory
+
+  - name: Checkout Synchweb project
+    git:
+        repo: "{{ synchweb_repo }}"
+        dest: "{{ synchweb_home }}"
+        version: "{{ synchweb_version }}"
+    ignore_errors: yes
+
+  - name: Change ownership to vagrant
+    file:
+        path: "{{ synchweb_home }}"
+        owner: vagrant
+        group: vagrant
+        recurse: yes
+#
+# New part to build webpack/composer
+#
+  - import_tasks: build_client.yml
+
+  - import_tasks: build_backend.yml
+
+  - name: Copy dummy authentication across (until php composer ready)
+    copy: src=files/SynchWeb/class.auth-dummy.php dest="{{ synchweb_home}}/api/includes" owner=vagrant group=vagrant mode=0644
+
+  - name: Copy patched CAS authentication across full ssl working...
+    copy: src=files/SynchWeb/class.auth-cas.php dest="{{ synchweb_home}}/api/includes" owner=vagrant group=vagrant mode=0644
+
+# We need to generate a JWT token for use with synchweb api
+  - name: Generate JWT token
+    shell: "head -c 64 /dev/urandom | base64 | tr --delete '\n'"
+    register: jwt
+
+  - name: Test JWT
+    debug:
+      msg: "echo {{jwt.stdout}}"
+
+  - name: Update synchweb config.php file
+    template: src=files/SynchWeb/config.php.j2 dest="{{ synchweb_home}}/api/config.php" owner=vagrant group=vagrant mode=0644
+
+# Only need this if not using webpack
+  - name: Update synchweb config.json file
+    template: src=files/SynchWeb/config.json dest="{{ synchweb_home}}/client/js/config.json" owner=vagrant group=vagrant mode=0644
+    when: use_webpack.stat == false
+
+  - name: Mount filesystem
+    mount:
+      name: /dls
+      src: "{{nfs_host}}:/exports/dls"
+      fstype: nfs
+      opts: ro,noauto,user
+      state: mounted
+#
+# If not using NFS there is a simple way to get test data on the system
+# Just copy the ispyb-dls-data archive to this role and unpack directly onto the
+# filesystem - as below...
+#
+#- name: Copy example data to DLS file system
+#  copy: src=files/ispyb-dls-dir.tar.gz dest="/home/vagrant" owner=vagrant group=vagrant mode=0644
+#- name: Unarchive the DLS example data
+#  unarchive:
+#    src: "/home/vagrant/ispyb-dls-dir.tar.gz"
+#    dest: "/exports"
+#    remote_src: yes
+#
+#- name: Change sample data path ownership to vagrant
+#  file:
+#      path: "/exports/dls"
+#      owner: vagrant
+#      group: vagrant
+#      recurse: yes
+# Might also need to put SELinux in permissive mode, selinux: policy=targeted state=permissive
+# Permissive logs  actions that would be blocked.
+# This is required to help access the files on a local installation...

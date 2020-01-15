@@ -1,0 +1,28 @@
+- include_tasks: install_packages.centos.yml
+  when: ansible_distribution == "CentOS"
+
+- include_tasks: install_packages.debian.yml
+  when: ansible_distribution == "Debian" or ansible_distribution == "Ubuntu"
+
+# Tasks that Download/Checkout SynchWeb repository
+- include_tasks: synchweb_development.yml
+
+# Setup Apache based on OS
+- include_tasks: setup_apache.debian.yml
+  when: ansible_distribution == "Debian" or ansible_distribution == "Ubuntu"
+
+- include_tasks: setup_apache.centos.yml
+  when: ansible_distribution == "CentOS"
+
+- name: copy cas cert to webserver
+  copy:
+    src: '../../certs/{{cas_host}}/{{cas_host}}.crt'
+    dest: /etc/certs/
+  ignore_errors: yes
+
+- name: copy hosts file to server
+  copy:
+    src: files/system/etc/hosts
+    dest: /etc/hosts
+
+ 

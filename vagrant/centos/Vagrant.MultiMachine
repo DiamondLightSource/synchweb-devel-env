@@ -1,0 +1,51 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+#
+# Changed base box from centos/7 to geerlingguy to include guest additions for shared folder.
+Vagrant.configure("2") do |config|
+  config.vm.box = "geerlingguy/centos7"
+  # As this is a dev setup, don't specify keys per box
+  config.ssh.insert_key = false
+
+  # Order is important for multi-machine
+  # We want the filesystem to be up before the web server so
+  # it can mount the filesystem properly
+  config.vm.define "cas" do |cas|
+    cas.vm.provider "virtualbox" do |v|
+      v.memory = 1024
+      v.cpus = 2
+    end
+    cas.vm.network "forwarded_port", guest: 8080, host: 8080
+    cas.vm.network "forwarded_port", guest: 8443, host: 8443
+    cas.vm.network "private_network", ip: "192.168.33.12"
+    cas.vm.hostname="cas"
+    cas.vm.provision "ansible" do |ansible|
+      ansible.playbook = "../../playbooks/cas.yml"
+    end
+  end
+
+  config.vm.define "db" do |db|
+    db.vm.network "forwarded_port", guest: 3306, host: 3306
+    db.vm.network "private_network", ip: "192.168.33.11"
+    db.vm.hostname="db"
+    db.vm.provision "ansible" do |ansible|
+      ansible.playbook = "../../playbooks/db.yml"
+    end
+  end
+
+  config.vm.define "web" do |web|
+    web.vm.network "forwarded_port", guest: 80, host: 9080
+    web.vm.network "forwarded_port", guest: 443, host: 9443
+    web.vm.network "private_network", ip: "192.168.33.10"
+    web.vm.hostname="web"
+    web.vm.synced_folder "src/", "/var/www/sites/"
+    web.vm.provision "ansible" do |ansible|
+      ansible.playbook = "../../playbooks/web.yml"
+      ansible.extra_vars = {
+        ispyb_db_host: "192.168.33.11",
+        nfs_host: "192.168.33.12"
+      }
+    end
+  end
+
+end

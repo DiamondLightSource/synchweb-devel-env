@@ -1,0 +1,21 @@
+- name: Add repository
+  yum_repository:
+    name: epel
+    description: EPEL YUM repo
+    baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+    gpgkey: https://archive.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7Server
+
+- name: Install nginx
+  package:
+    name: nginx    
+
+- name: Update nginx configuration
+  template:
+    src: files/nginx/nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+
+- name: Enable nginx service
+  systemd:
+    name: nginx
+    state: restarted
+    enabled: yes

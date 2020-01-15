@@ -1,0 +1,28 @@
+
+<Directory "{{ synchweb_home }}">
+    Options +FollowSymLinks
+
+    Order allow,deny
+    Allow from all
+    RewriteEngine on
+    RewriteRule ^(.*)$ /client/$1 [L]
+</Directory>
+
+<Directory "{{ synchweb_home }}/api/">
+    DirectoryIndex index.php
+
+    RewriteEngine on
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*) index.php [L]
+</Directory>
+
+<Directory "{{ synchweb_home }}/client/">
+    DirectoryIndex index.php
+
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} !index
+    RewriteRule (.*) index.php [L]
+</Directory>

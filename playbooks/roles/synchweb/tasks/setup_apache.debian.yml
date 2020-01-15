@@ -1,0 +1,42 @@
+  - name: Add Apache synchweb directory config to system
+    template: src=files/apache2/ispyb2.conf.j2 dest=/etc/apache2/conf-available/ispyb2.conf owner=root group=root mode=0600
+
+  - name: Add Apache synchweb directory ssl config to system
+    template: src=files/apache2/ispyb2-site.conf.j2 dest=/etc/apache2/sites-available/ispyb2-site.conf owner=root group=root mode=0600
+
+# Move this to use the utils a2ensite? (disable by a2dissite)
+  - name: Enable SynchWeb sites in Apache config
+    file:
+      src: /etc/apache2/sites-available/{{item}}
+      state: link
+      dest: /etc/apache2/sites-enabled/{{item}}
+    with_items:
+      - ispyb2-site.conf
+
+# Move this to use the utils a2ensite? (disable by a2dissite)
+  - name: Enable SynchWeb conf in Apache config
+    file:
+      src: /etc/apache2/conf-available/{{item}}
+      state: link
+      dest: /etc/apache2/conf-enabled/{{item}}
+    with_items:
+      - ispyb2.conf
+
+  - name: Check openssl exists
+    package: name=openssl state=latest
+
+# Might need to specialise this for Debian/CentOS
+  - name: Generate self-signed certificate
+    command: 'openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+	-keyout /etc/ssl/private/{{sitename}}.key -out /etc/ssl/certs/{{sitename}}.crt \
+	-subj "/C=GB/ST=UK/L=Didcot/O=Diamond/OU=Diamond/CN={{sitename}}"'
+
+# Try to setup apache on debian/ubuntu!
+  - name: Enable apache
+    command: a2enmod {{item}}
+    with_items:
+      - ssl
+      - rewrite
+
+  - name: Start the Apache Web service
+    service: name=apache2 state=reloaded enabled=yes

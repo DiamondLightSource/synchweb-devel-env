@@ -1,0 +1,24 @@
+  - name: Install Apache
+    package: name=httpd state=latest
+
+  - name: Install Apache SSL 
+    package: name=mod_ssl state=latest
+
+  - name: Start the Apache Web service
+    service: name=httpd state=started enabled=yes
+
+# Note we need the native driver version (possibly some other ones too...
+  - name: Install PHP packages
+    package:
+      name: "{{ item }}"
+      state: latest
+    with_items:
+      - php
+      - php-curl
+      - php-json
+      - php-mysqlnd
+      - php-cgi
+      - php-ldap
+      - php-mbstring
+
+

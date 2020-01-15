@@ -1,0 +1,7 @@
+# Provion file for a single LAMP stack with synchweb
+- hosts: all
+  become: yes
+  roles:
+    - nfs
+    - synchweb
+    - ispyb_db

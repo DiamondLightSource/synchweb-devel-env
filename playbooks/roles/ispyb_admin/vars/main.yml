@@ -1,0 +1,5 @@
+repo: https://github.com/drnasmith/flask-ispyb-admin
+build_dir: /var/www/sites/flask-ispyb-admin
+
+local_user: vagrant
+local_group: vagrant

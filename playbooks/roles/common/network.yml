@@ -1,0 +1,8 @@
+# Ad-hoc play to restart the network interface (fix bug in Vagrant 1.9.1)
+# Designed to be run as a play
+- hosts: all
+  become: yes
+
+  tasks:
+  - name: Restart network
+    service: name=network state=restarted  

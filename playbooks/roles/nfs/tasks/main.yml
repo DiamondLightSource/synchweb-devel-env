@@ -1,0 +1,65 @@
+- name: NFS Server
+  package: name=nfs-utils state=present
+  when: ansible_distribution == "CentOS"
+
+- name: NFS Server
+  package: name=nfs-kernel-server state=present
+  when: ansible_distribution == "Debian"  or ansible_distribution == "Ubuntu"
+
+- name: Setup NFS Exports Directorys
+  file:
+    path: /exports/dls/
+    state: directory
+    recurse: yes
+
+- name: Setup NFS mount points
+  file:
+    path: /exports/dls/{{item}}
+    state: directory
+  with_items:
+    - i01
+    - i02
+    - i03
+
+- name: Copy NFS exports file
+  copy:
+    src: files/exports
+    dest: /etc/
+
+- name: Copy example data to DLS file system
+  copy: src=files/ispyb-dls-dir.tar.gz dest="/home/vagrant" owner=vagrant group=vagrant mode=0644
+
+- name: Unarchive the DLS example data
+  unarchive:
+    src: "/home/vagrant/ispyb-dls-dir.tar.gz"
+    dest: "/exports"
+    remote_src: yes
+
+- name: Change sample data path ownership to vagrant and make sure readable by everyone (e.g. apache)
+  file:
+      path: "/exports/dls"
+      owner: vagrant
+      group: vagrant
+      mode: "o+r"
+      recurse: yes
+
+# # Python bindings for selinux required explicitly on debian
+# - name: SE Linux Python bindings
+#   package: name=python-selinux state=present
+#   when: ansible_distribution == "Debian"  or ansible_distribution == "Ubuntu"
+
+# Put SELinux in permissive mode, logging actions that would be blocked.
+# This is required to help access the files on a local installation...
+- selinux:
+    policy: targeted
+    state: permissive
+  when: ansible_distribution == "CentOS"
+
+# Finally start the service - TODO tidy this so it uses var for the server name
+- name: Start NFS Server
+  service: name=nfs-server state=started enabled=yes
+  when: ansible_distribution == "CentOS"
+
+- name: Start NFS Server
+  service: name=nfs-kernel-server state=started enabled=yes
+  when: ansible_distribution == "Debian" or ansible_distribution == "Ubuntu"

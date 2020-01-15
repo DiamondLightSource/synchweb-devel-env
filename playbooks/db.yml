@@ -1,0 +1,6 @@
+# Provion file for the MariaDB Server
+- hosts: db
+  become: yes
+  roles:
+    - ispyb_db
+

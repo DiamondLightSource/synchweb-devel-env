@@ -1,0 +1,40 @@
+---
+- name: Test if webpack present
+  stat:
+    path: "{{ synchweb_home }}/client/package.json"
+  register: use_webpack
+
+# Changes to build npm
+- name: Get the nodejs package repo
+  get_url:
+    url: https://rpm.nodesource.com/setup_10.x
+    dest: /tmp/setup_nodejs
+  when: use_webpack.stat is defined
+
+- name: Install nodejs package repo
+  command: sh setup_nodejs
+  args:
+    chdir: /tmp
+  become: true
+  when: use_webpack.stat is defined
+
+- name: Install npm
+  package:
+    name: nodejs
+    state: latest
+  when: use_webpack.stat is defined
+
+- name: Install webpack dependencies
+  npm:
+    path: "{{synchweb_home}}/client"
+  become: yes
+  become_user: vagrant
+  when: use_webpack.stat is defined
+
+- name: Build client
+  command: "npm run build"
+  args:
+    chdir: "{{synchweb_home}}/client"
+  become: yes
+  become_user: vagrant
+  when: use_webpack.stat is defined

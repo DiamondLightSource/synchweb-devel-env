@@ -1,0 +1,26 @@
+- name: Install JDK 8 CentOS
+  package: name=java-1.8.0-openjdk-devel state=present
+  when: ansible_distribution == "CentOS"
+
+# Debian version (9 or above jdk 8 needed for apache tomcat 9...)
+- name: Install JDK 8 Ubuntu
+  package: name=openjdk-8-jdk state=present
+  when: ansible_distribution == "Debian" or ansible_distribution == "Ubuntu"
+
+- name: Install Maven (required to build CAS Overlay)
+  package: name=maven state=present
+
+- name: Install Git
+  package: name=git state=latest
+
+- name: Generate Self Signed Certificate
+  import_tasks: generate_self_signed_certificate.yml
+
+- name: Install NGINX
+  import_tasks: nginx.yml
+
+- name: Install Apache Tomcat
+  import_tasks: tomcat.yml
+
+- name: Import Apereo CAS Tasks
+  import_tasks: apereo-cas.yml

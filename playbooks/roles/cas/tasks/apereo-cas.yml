@@ -1,0 +1,45 @@
+
+# Ignore errors for git checkout.
+# Once we;ve been through this once, the checkout will fail because we change the values through our template (pom file)
+- name: Checkout Apereo CAS Overlay template
+  git:
+    repo: https://github.com/apereo/cas-overlay-template
+    version: "{{cas_version}}"
+    dest: "{{cas_home}}"
+  become: yes
+  become_user: vagrant
+  ignore_errors: yes
+
+- name: Update pom file
+  copy:
+    src: files/apereo-cas/pom.xml
+    dest: "{{cas_home}}"
+
+- name: Build Apereo CAS (takes a long time...)
+  command: ./build.sh package creates={{cas_home}}/target/cas.war
+  become: yes
+  become_user: vagrant
+  args:
+    chdir: "{{cas_home}}"
+
+- stat:
+    path: "{{cas_home}}/target/cas.war"
+  register: caswar
+
+- name: Copy target war to apache tomcat
+  copy:
+    src: "{{cas_home}}/target/cas.war"
+    dest: "{{tomcat_home}}/webapps/"
+    remote_src: yes
+  when: caswar.stat.exists
+
+- name: Update CAS configuration files
+  synchronize:
+    src: files/apereo-cas/etc/cas/
+    dest: /etc/cas/
+
+# - name: Copy keystore to CAS config dir
+#   copy:
+#     src: /home/vagrant/.keystore
+#     dest: /etc/cas/config/thekeystore
+#     remote_src: yes
