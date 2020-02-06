@@ -11,14 +11,16 @@ Vagrant.configure("2") do |config|
   config.vm.box = "geerlingguy/centos7"
 
   config.vm.define "lamp" do |lamp|
+    # Either use private network or expose ports on localhost
     # accessing "localhost:8080" will access port 80 on the guest machine.
-    lamp.vm.network "forwarded_port", guest: 80, host: 9080
-    lamp.vm.network "forwarded_port", guest: 3306, host: 3306
+    #lamp.vm.network "forwarded_port", guest: 80, host: 9080
+    #lamp.vm.network "forwarded_port", guest: 3306, host: 3306
+
     lamp.vm.network "private_network", ip: "192.168.33.10"
 
     # Ports required for CAS role
-    lamp.vm.network "forwarded_port", guest: 8080, host: 8080
-    lamp.vm.network "forwarded_port", guest: 8443, host: 8443
+    #lamp.vm.network "forwarded_port", guest: 8080, host: 8080
+    #lamp.vm.network "forwarded_port", guest: 8443, host: 8443
 
     # Synched folder does not play nicely with webpack node-sass package
     # lamp.vm.synced_folder "src/", "/var/www/sites/"
