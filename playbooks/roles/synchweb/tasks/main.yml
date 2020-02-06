@@ -14,6 +14,7 @@
 - include_tasks: setup_apache.centos.yml
   when: ansible_distribution == "CentOS"
 
+# Only need this if we are using cas for authorization
 - name: copy cas cert to webserver
   copy:
     src: '../../certs/{{cas_host}}/{{cas_host}}.crt'
