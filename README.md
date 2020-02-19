@@ -24,7 +24,7 @@ Note the standalone version does not include a CAS server because of https port 
 * Run vagrant up for default Vagrant file "vagrant -f <filename>" for other options
 * This should download the relevant box and provision the machine(s)
 * Try using a web browser on http://localhost:9080 or http://192.168.33.10 to see the Synchweb pages
-* The SynchWeb source code will be synchronized to src sub directory (e.g. centos/src)
+* If you want to edit the source code from the host, uncomment the Vagrant file line  'lamp.vm.synced_folder "src/", "/var/www/sites/"'. The SynchWeb source code will be synchronized to src sub directory (e.g. centos/src).
 
 ### Authentication
 * Authentication types supported: dummy and cas. 
