@@ -2,6 +2,11 @@
 # Install and setup composer
 - name: Install PHP Composer
   script: files/composer/install_composer.sh
+  when: use_php7 == false
+
+- name: Install PHP Composer
+  script: files/composer/install_composer_php7.sh
+  when: use_php7 == true
 
 - name: Make Composer available for future tasks...
   command: mv composer.phar /usr/local/bin/composer
@@ -18,11 +23,21 @@
     path: "{{synchweb_home}}/api/composer.json"
   register: use_composer
 
+  # Getting an error when trying to run composer as root
+- name: Install dependencies (PHP 7)
+  composer:
+    command: install
+    executable: /opt/rh/rh-php72/root/usr/bin/php
+    working_dir: "{{synchweb_home}}/api"
+  when: use_composer.stat.exists == true and use_php7 == true
+  become: true
+  become_user: vagrant
+
 - name: Install dependencies
   composer:
     command: install
     working_dir: "{{synchweb_home}}/api"
-  when: use_composer.stat.exists == true
+  when: use_composer.stat.exists == true and use_php7 == false
 
 #
 # If not using composer then we copy dependencies across from archive
@@ -46,7 +61,7 @@
       group: vagrant
       recurse: yes
 
-## Fixes...
+## Fixes...(may not be required for php 7...)
 - name: Ensure mpdf writable cache
   file:
     path: "{{synchweb_home}}/api/vendor/mpdf/mpdf/ttfontdata"

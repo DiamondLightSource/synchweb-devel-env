@@ -7,6 +7,9 @@
   - name: Start the Apache Web service
     service: name=httpd state=started enabled=yes
 
+  - name: Install CentOS Software Collections
+    package: name=centos-release-scl state=latest
+
 # Note we need the native driver version (possibly some other ones too...
   - name: Install PHP packages
     package:
@@ -20,5 +23,27 @@
       - php-cgi
       - php-ldap
       - php-mbstring
+    when: use_php7 == false
+
+  - name: Install PHP 7 packages
+    package:
+      name: "{{ item }}"
+      state: latest
+    with_items:
+      - rh-php72
+      - rh-php72-php
+      - rh-php72-php-cli
+      - rh-php72-php-json
+      - rh-php72-php-mysqlnd
+      - rh-php72-php-ldap
+      - rh-php72-php-mbstring
+      - rh-php72-php-gd
+      - rh-php72-php-fpm
+    when: use_php7 == true
+
+  - name: Start the PHP FPM service
+    service: name=rh-php72-php-fpm state=started enabled=yes
+    when: use_php7 == true
+
 
 

@@ -1,4 +1,6 @@
 <VirtualHost *:80>
 	ServerAdmin webmaster@localhost
-	DocumentRoot "{{ synchweb_home }}" 
+	DocumentRoot "{{ synchweb_home }}"
+
+	SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 </VirtualHost>
