@@ -5,6 +5,10 @@
   - name: Install Unzip
     package: name=unzip state=latest
 
+# Wget needed for composer install
+  - name: Install wget
+    package: name=wget state=latest
+
   - name: Ensure SynchWeb dir exists
     file:
       path: "{{ synchweb_home }}"
