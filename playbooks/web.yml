@@ -1,5 +1,0 @@
-# Provion file for the SynchWeb Server
-- hosts: web
-  become: yes
-  roles:
-    - synchweb
