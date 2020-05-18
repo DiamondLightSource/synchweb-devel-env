@@ -1,0 +1,60 @@
+# - name: Add Apache synchweb directory config to system
+#   template: src=files/apache2/ispyb2.conf.j2 dest=/etc/httpd/conf.d/ispyb2.conf owner=root group=root mode=0600
+
+# - name: Add Apache synchweb directory site config to system
+#   template: src=files/apache2/ispyb2-site.conf.j2 dest=/etc/httpd/conf.d/ispyb2-site.conf owner=root group=root mode=0600
+- name: Add Apache synchweb directory config to system
+  template: src=files/apache2/centos/ispyb_ssl.conf.j2 dest=/etc/httpd/conf.d/ispyb_ssl.conf owner=root group=root mode=0600
+
+- name: Add Apache synchweb directory config to system
+  template: src=files/apache2/centos/ispyb_site.conf.j2 dest=/etc/httpd/conf.d/ispyb_site.conf owner=root group=root mode=0600
+
+- name: Remove any old ssl.conf file
+  file: path=/etc/httpd/conf.d/ssl.conf state=absent
+
+- name: Remove default welcome site
+  file: path=/etc/httpd/conf.d/welcome.conf state=absent
+
+#- name: Add Apache synchweb directory ssl config to system
+#  template: src=files/apache2/ssl.conf.j2 dest=/etc/httpd/conf.d/ssl.conf owner=root group=root mode=0600
+
+# SE Linux settings
+# First one definately needed, network probably needed for curl, ldap and e-mail depending on what you test
+- name: Configure SE Linux rules
+  command: setsebool -P {{item}} 1
+  with_items:
+    - httpd_can_network_connect_db
+    - httpd_can_network_connect
+    - httpd_can_connect_ldap
+    - httpd_can_sendmail
+    
+# CentOS 7 did not symlink the private directory. It does link the certs dir.
+# We setup this up to provide a simple location for self-signed certificates
+# For production, review these locations so they are consistent.
+- name: Check ssl directories exists
+  file:
+    src: /etc/pki/tls/private
+    dest: /etc/ssl/private
+    state: link
+    owner: root
+    group: root
+
+# Might need to specialise this for Debian/CentOS
+# - name: Generate self-signed certificate
+#   command: 'openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+# -keyout /etc/ssl/private/{{sitename}}.key -out /etc/ssl/certs/{{sitename}}.crt \
+# -subj "/C=GB/ST=UK/L=Didcot/O=Example/OU=Example/CN={{sitename}}"'
+
+# If using CAS and ssh...
+- name: Generate Self Signed Certificate
+  import_tasks: ../../common/generate_self_signed_certificate.yml
+
+# Only need this if we are using cas for authorization
+- name: copy cas cert to webserver
+  copy:
+    src: '../../certs/cas/{{cas_host}}.crt'
+    dest: /etc/certs/
+  ignore_errors: yes
+
+- name: Restart Apache
+  service: name=httpd state=restarted

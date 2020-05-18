@@ -13,6 +13,10 @@
 - name: Install Git
   package: name=git state=latest
 
+# Text mode editor...
+- name: Install Nano
+  package: name=nano state=latest
+
 - name: Generate Self Signed Certificate
   import_tasks: generate_self_signed_certificate.yml
 
@@ -24,3 +28,8 @@
 
 - name: Import Apereo CAS Tasks
   import_tasks: apereo-cas.yml
+
+- name: copy hosts file to server
+  copy:
+    src: files/system/etc/hosts
+    dest: /etc/hosts

@@ -10,21 +10,21 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "geerlingguy/debian8"
 
-  config.vm.define "lamp" do |lamp|
-    lamp.vm.network "forwarded_port", guest: 80, host: 9080
-    lamp.vm.network "private_network", ip: "192.168.33.10"
+  config.vm.define "synchweb" do |synchweb|
+    synchweb.vm.network "forwarded_port", guest: 80, host: 9080
+    synchweb.vm.network "private_network", ip: "192.168.33.10"
 
-    lamp.vm.hostname="lamp"
+    synchweb.vm.hostname="synchweb"
 
 # Annoying hack for bare bones ubuntu (no python installed)
-#    lamp.vm.provision "shell" do |sh|
+#    synchweb.vm.provision "shell" do |sh|
 #      sh.inline = "apt-get install -y python"
 #    end
 
-    lamp.vm.synced_folder "src/", "/var/www/sites/"
+    synchweb.vm.synced_folder "src/", "/var/www/sites/"
 
-#    lamp.vm.provision "ansible" do |ansible|
-#      ansible.playbook = "../playbooks/standalone.yml"
+#    synchweb.vm.provision "ansible" do |ansible|
+#      ansible.playbook = "../playbooks/synchweb.yml"
 #    end
   end
 end

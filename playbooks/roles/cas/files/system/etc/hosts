@@ -1,5 +1,5 @@
-127.0.0.1   web synchweb synchweb.example.org
+127.0.0.1   cas cas.example.org
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
 192.168.33.11 db db.example.org
-192.168.33.12 cas cas.example.org
+192.168.33.10 web synchweb.example.org

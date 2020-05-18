@@ -1,16 +1,19 @@
 <?php
 
-require_once('config.php');
-require_once(dirname(__FILE__).'/class.auth.php');
+namespace SynchWeb\Authentication\Type;
 
-class CASAuthentication extends AuthenticationBase implements Authentication {
+use phpCAS;
+use SynchWeb\Authentication\AuthenticationInterface;
+use SynchWeb\Authentication\AuthenticationParent;
 
-    function check() {
+class CAS extends AuthenticationParent implements AuthenticationInterface
+{
+    function check()
+    {
         global $cas_url, $cas_sso, $cacert;
 
         if (!$cas_sso) return false;
 
-        require_once 'lib/CAS/CAS.php';
         phpCAS::client(CAS_VERSION_2_0, $cas_url, 443, '/cas');
         phpCAS::setCasServerCACert($cacert);
 
@@ -26,15 +29,15 @@ class CASAuthentication extends AuthenticationBase implements Authentication {
 
             if ($check) return phpCAS::getUser();
 
-        // Dont crash the app
-        } catch (Exception $e) {
+            // Dont crash the app
+        } catch (\Exception $e) {
 
         }
     }
 
-    function authenticate($login, $password) {
-        global $cas_url;
-        include(dirname(__FILE__).'/../config.php');
+    function authenticate($login, $password)
+    {
+        global $cas_url, $cacert;
 
         $fields = array(
             'username' => $login,
@@ -42,7 +45,7 @@ class CASAuthentication extends AuthenticationBase implements Authentication {
         );
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://'.$cas_url.'/cas/v1/tickets');
+        curl_setopt($ch, CURLOPT_URL, 'https://' . $cas_url . '/cas/v1/tickets');
         curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_CAINFO, $cacert);
@@ -63,16 +66,18 @@ class CASAuthentication extends AuthenticationBase implements Authentication {
         return $code == 201;
     }
 
-    function service($service) {
-        global $cas_url;
+    function service($service)
+    {
+        global $cas_url, $cacert;
 
         $fields = array(
             'service' => $service,
         );
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://'.$cas_url.'/cas/v1/tickets/'.$this->tgt);
+        curl_setopt($ch, CURLOPT_URL, 'https://' . $cas_url . '/cas/v1/tickets/' . $this->tgt);
         curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_CAINFO, $cacert);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $resp = curl_exec($ch);
@@ -82,7 +87,10 @@ class CASAuthentication extends AuthenticationBase implements Authentication {
         return rtrim($resp);
     }
 
-    function validate($service, $ticket) {
+    function validate($service, $ticket)
+    {
+        global $cas_url, $cacert;
+
         $fields = array(
             'service' => $service,
             'ticket' => $ticket,
@@ -90,8 +98,9 @@ class CASAuthentication extends AuthenticationBase implements Authentication {
         );
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://'.$cas_url.'/cas/v1/serviceValidate');
+        curl_setopt($ch, CURLOPT_URL, 'https://' . $cas_url . '/cas/v1/serviceValidate');
         curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_CAINFO, $cacert);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $resp = curl_exec($ch);
@@ -100,5 +109,4 @@ class CASAuthentication extends AuthenticationBase implements Authentication {
 
         return rtrim($resp);
     }
-
 }

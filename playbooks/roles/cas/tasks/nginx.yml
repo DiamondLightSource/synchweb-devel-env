@@ -19,3 +19,8 @@
     name: nginx
     state: restarted
     enabled: yes
+
+- name: Configure SE Linux rules
+  command: setsebool -P {{item}} 1
+  with_items:
+    - httpd_can_network_connect

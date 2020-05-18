@@ -1,0 +1,29 @@
+- name: Check openssl exists
+  package: name=openssl state=latest
+
+# CentOS 7 did not symlink the private directory. It does link the certs dir.
+# We setup this up to provide a simple location for self-signed certificates
+# For production, review these locations so they are consistent.
+- name: Check ssl directories exists
+  file:
+    src: /etc/pki/tls/private
+    dest: /etc/ssl/private
+    state: link
+    owner: root
+    group: root
+
+- name: Generate self-signed certificate
+  command: 'openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+            -keyout /etc/pki/tls/private/{{sitename}}.key -out /etc/pki/tls/certs/{{sitename}}.crt \
+            -subj "/C=GB/ST=UK/L=Didcot/O=Example/OU=Example/CN={{sitename}}"'
+
+# Copy the generated files back here so we can distribute them to the web server
+- fetch:
+    src: /etc/pki/tls/private/{{sitename}}.key
+    dest: certs/{{ inventory_hostname }}/
+    flat: yes
+
+- fetch:
+    src: /etc/pki/tls/certs/{{sitename}}.crt
+    dest: certs/{{ inventory_hostname }}/
+    flat: yes

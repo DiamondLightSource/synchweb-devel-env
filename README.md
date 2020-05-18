@@ -6,34 +6,36 @@ This project allows you to generate a vagrant based dev environment.
 It uses Ansible for provisioning.
 
 It can generate:
-- a standalone machine with apache, php, synchweb and mariadb in one box.
-- a multimachine setup:
-  - web: apache, php and synchweb
-  - db: mariadb server
-  - cas: nfs and cas authentication (via nginx and tomcat).
+- a machine with apache, php, synchweb and mariadb in one VM.
+- a cas authentication VM (via nginx and tomcat).
+
+Self signed certificates are generated for synchweb.example.org and cas.example.org
 
 The test data includes a couple of visits registered to the user:password 'boaty':'mcboatface'
 
-Note the standalone version does not include a CAS server because of https port conflicts between nginx and apache
 
 ## Setup
 * Clone this repository
 * Install vagrant, virtualbox and ansible on your host (e.g. apt install ansible vagrant virtualbox-qt)
 * Decide which OS you want centos or debian (centos is recommended and used more often)
 * cd into the dir (e.g. vagrant/centos)
-* Run vagrant up for default Vagrant file "vagrant -f <filename>" for other options
+* Run "vagrant up synchweb" for web stack.
+* If you want to test CAS for authentication Run "vagrant up" and wait for both CAS and SynchWeb machines to start
 * This should download the relevant box and provision the machine(s)
-* Try using a web browser on http://localhost:9080 or http://192.168.33.10 to see the Synchweb pages
+* Try using a web browser on https://192.168.33.10 to see the Synchweb pages
 * If you want to edit the source code from the host, uncomment the Vagrant file line  'lamp.vm.synced_folder "src/", "/var/www/sites/"'. The SynchWeb source code will be synchronized to src sub directory (e.g. centos/src).
 
 ### Authentication
 * Authentication types supported: dummy and cas. 
-    * Dummy authentication should be used in the standalone case, CAS works for multi machine.
-    * To change the authentication type, before running vagrant up, edit the template file playbooks/roles/synchweb/vars/main.yml
-    * LDAP is also supported in SynchWeb if you want to test integration with a directory server 
-* Some features may require your host being able to resolve the hostname of the boxes (e.g. cas logout will redirect to https://cas/cas/logout) so add an entry in your hosts file to point to 192.168.33.12
-* The CAS auth needs some work. At the moment it relies on a patched source file class.auth-cas.php to explicitly set the CAS certificate. The synchweb auth_host variable should match the cas role sitename.
-* Also for development with https you will need to generate a self signed certificate; configured to look in: /certs/<sitename>/<sitename>.crt, /certs/<sitename>/<sitename>.key
+* Dummy authentication should be used in the standalone case, CAS works as well but requires both VMs.
+* To change the authentication type, before running vagrant up, edit the template file playbooks/roles/synchweb/vars/main.yml
+* LDAP is also supported in SynchWeb if you want to test integration with a directory server (see below)
+* The CAS auth needs some work. At the moment it relies on a patched source file CAS.php to explicitly set the CAS certificate. The synchweb auth_host variable should match the cas role sitename.
+
+### Hosts
+Some features may require your host being able to resolve the hostname of the boxes (e.g. cas logout will redirect to https://cas.example.org/cas/logout) so add an entries in your hosts file as follows:
+* 192.168.33.10 synchweb.example.org
+* 192.168.33.12 cas.example.org
 
 #### LDAP
 SynchWeb can be configured to talk to an LDAP server.
@@ -43,7 +45,7 @@ Change the SynchWeb config.php settings to talk to the ldap server e.g. ldap://1
 You can add users (e.g. boaty) into the LDAP provision.sh script. Best to do this before bringing the box up.
 
 ## Reprovision
-* If you need to re-run the provisioning (after a change) run vagrant provision OR vagrant <boxname> provision for multi-machine
+* If you need to re-run the provisioning (after a change) run vagrant provision <boxname> 
 
 ## Cleanup
 * cd into the dir and run vagrant destroy

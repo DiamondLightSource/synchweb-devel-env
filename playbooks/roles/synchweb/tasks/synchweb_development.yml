@@ -34,12 +34,6 @@
 
   - import_tasks: build_backend.yml
 
-  - name: Copy dummy authentication across (until php composer ready)
-    copy: src=files/SynchWeb/class.auth-dummy.php dest="{{ synchweb_home}}/api/includes" owner=vagrant group=vagrant mode=0644
-
-  - name: Copy patched CAS authentication across full ssl working...
-    copy: src=files/SynchWeb/class.auth-cas.php dest="{{ synchweb_home}}/api/includes" owner=vagrant group=vagrant mode=0644
-
 # We need to generate a JWT token for use with synchweb api
   - name: Generate JWT token
     shell: "head -c 64 /dev/urandom | base64 | tr --delete '\n'"
@@ -51,11 +45,6 @@
 
   - name: Update synchweb config.php file
     template: src=files/SynchWeb/config.php.j2 dest="{{ synchweb_home}}/api/config.php" owner=vagrant group=vagrant mode=0644
-
-# Only need this if not using webpack
-  - name: Update synchweb config.json file
-    template: src=files/SynchWeb/config.json dest="{{ synchweb_home}}/client/js/config.json" owner=vagrant group=vagrant mode=0644
-    when: use_webpack.stat == false
 
   - name: Mount filesystem
     mount:
@@ -86,3 +75,4 @@
 # Might also need to put SELinux in permissive mode, selinux: policy=targeted state=permissive
 # Permissive logs  actions that would be blocked.
 # This is required to help access the files on a local installation...
+

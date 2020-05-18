@@ -1,0 +1,87 @@
+Listen 443
+
+LoadModule ssl_module modules/mod_ssl.so
+
+SSLRandomSeed startup file:/dev/urandom  256
+SSLRandomSeed connect builtin
+
+
+<VirtualHost *:443>
+    ErrorLog logs/ssl_error_log
+    TransferLog logs/ssl_access_log
+    LogLevel warn
+    SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1 
+
+    SSLEngine On
+    SSLCertificateFile /etc/pki/tls/certs/DiamStar.pem
+    SSLCertificateKeyFile /etc/pki/tls/private/DiamStar.key
+    SSLCertificateChainFile /etc/pki/tls/certs/GlobalSignIntermediateOrgG2.pem
+    SSLProtocol -ALL +TLSv1 +TLSv1.1 +TLSv1.2
+    SSLCipherSuite ECDHE-RSA-AES256-SHA384:AES256-SHA256:!RC4:HIGH:!MD5:!aNULL:!EDH:!AESGCM;
+    SSLHonorCipherOrder on
+
+    ServerAdmin ispyb@diamond.ac.uk
+    DocumentRoot "/var/www/sites/synchweb"
+
+    SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0
+    ProxyPass /ws/ https://sci-serv5.diamond.ac.uk:8443/axis2/services/
+    ProxyPass /ws/* https://sci-serv5.diamond.ac.uk:8443/axis2/services/*
+    SSLProxyEngine on
+    ProxyRequests Off
+    <Proxy *>
+      Allow from all
+    </Proxy>
+
+    <Directory "/var/www/sites/synchweb">
+      Options -Indexes +FollowSymLinks
+      AllowOverride None
+      Require all granted
+
+      # Make index.php the default index
+      DirectoryIndex index.php
+      RewriteEngine on
+
+      # Disable access to .git folders
+      RewriteRule ^(.*/)?\.git+ - [F,L]
+      ErrorDocument 403 "Access denied"
+
+      # Disable trace
+      RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK)
+      RewriteRule .* - [F]
+
+      RewriteEngine on
+      RewriteRule ^(.*)$ /client/$1 [L]
+    </Directory>
+
+    <Directory "/var/www/sites/synchweb/api/">
+        DirectoryIndex index.php
+		
+        RewriteEngine on
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteRule ^(.*) index.php [L]
+    </Directory>
+
+    <Directory "/var/www/sites/synchweb/client/">
+
+        DirectoryIndex index.php
+
+        RewriteEngine On
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteCond %{REQUEST_URI} !index
+        RewriteRule (.*) index.php [L]
+
+    </Directory>
+
+    <FilesMatch \.php$>
+        # 2.4.10+ can proxy to unix socket
+        # SetHandler "proxy:unix:/var/run/php5-fpm.sock|fcgi://localhost/"
+
+        # Else we can just use a tcp socket:
+        SetHandler "proxy:fcgi://127.0.0.1:9000"
+    </FilesMatch>
+
+</VirtualHost>
+
+

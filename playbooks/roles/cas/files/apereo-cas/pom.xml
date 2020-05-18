@@ -132,6 +132,18 @@
                 <!--
                 ...Additional dependencies may be placed here...
                 -->
+                <!-- This one allows REST Access -->
+                <dependency>
+                    <groupId>org.apereo.cas</groupId>
+                    <artifactId>cas-server-support-rest</artifactId>
+                    <version>${cas.version}</version>
+                </dependency>
+                <!-- This one allows Service SSO access via JSON config files -->
+                <dependency>
+                    <groupId>org.apereo.cas</groupId>
+                    <artifactId>cas-server-support-json-service-registry</artifactId>
+                    <version>${cas.version}</version>
+                </dependency>                
             </dependencies>
         </profile>
 

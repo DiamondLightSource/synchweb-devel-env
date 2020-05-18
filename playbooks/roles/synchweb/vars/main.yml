@@ -1,11 +1,11 @@
 # Variables only required under this role
 synchweb_home: /var/www/sites/synchweb
-sitename: synchweb
+sitename: synchweb.example.org
 synchweb_repo: https://github.com/DiamondLightSource/SynchWeb.git
 synchweb_version: HEAD
 # NFS host is overridden in multi-machine setup
 nfs_host: localhost
 # db_host is overridden in multi-machine setup
-cas_host: cas
+cas_host: cas.example.org
 # Auth type can by dummy (e.g. standalone) or cas for multi-machine
-auth_type: dummy
+auth_type: cas

@@ -1,0 +1,7 @@
+{
+    "@class" : "org.apereo.cas.services.RegexRegisteredService",
+    "serviceId" : "http://synchweb.example.org",
+    "name" : "SynchWeb",
+    "id" : 100,
+    "evaluationOrder" : 1
+}
