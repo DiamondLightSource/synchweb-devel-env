@@ -24,6 +24,9 @@
 - name: Copy patched CAS authentication across full ssl working...
   copy: src=files/SynchWeb/CAS.php dest="{{ synchweb_home }}/api/src/Authentication/Type/CAS.php" owner=vagrant group=vagrant mode=0644
 
+- name: Copy patched UAS file across (would need to be swapped for UAS)
+  copy: src=files/SynchWeb/MockUAS.php dest="{{ synchweb_home }}/api/src/MockUAS.php" owner=vagrant group=vagrant mode=0644
+
 # Finally set the ownership to vagrant.
 - name: Change ownership to vagrant
   file:
