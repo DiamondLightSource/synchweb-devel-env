@@ -19,16 +19,18 @@ The test data includes a couple of visits registered to the user:password 'boaty
 * Install vagrant, virtualbox and ansible on your host (e.g. apt install ansible vagrant virtualbox-qt)
 * Decide which OS you want centos or debian (centos is recommended and used more often)
 * cd into the dir (e.g. vagrant/centos)
-* Run "vagrant up synchweb" for web stack.
-* If you want to test CAS for authentication Run "vagrant up" and wait for both CAS and SynchWeb machines to start
-* This should download the relevant box and provision the machine(s)
+* The default setup uses CAS VM for authentication. Run "vagrant up" and wait for both CAS and SynchWeb machines to start
+* If you just want the web stack, run "vagrant up synchweb". (See authentication notes below.)
 * Try using a web browser on https://192.168.33.10 to see the Synchweb pages
 * If you want to edit the source code from the host, uncomment the Vagrant file line  'lamp.vm.synced_folder "src/", "/var/www/sites/"'. The SynchWeb source code will be synchronized to src sub directory (e.g. centos/src).
 
 ### Authentication
 * Authentication types supported: dummy and cas. 
-* Dummy authentication should be used in the standalone case, CAS works as well but requires both VMs.
+* Dummy authentication should be used in the standalone case (synchweb vm only)
+* SynchWeb can work with CAS but requires the cas VMs to run up as well.
 * To change the authentication type, before running vagrant up, edit the template file playbooks/roles/synchweb/vars/main.yml
+* To add users to cas, edit the playbooks/roles/cas/files/apereo-cas/etc/cas/config/users.txt file (username::password)
+* The user will still need permissions to see sessions in ISPyB so some editing of the ispyb database will be required.
 * LDAP is also supported in SynchWeb if you want to test integration with a directory server (see below)
 * The CAS auth needs some work. At the moment it relies on a patched source file CAS.php to explicitly set the CAS certificate. The synchweb auth_host variable should match the cas role sitename.
 
@@ -48,7 +50,7 @@ You can add users (e.g. boaty) into the LDAP provision.sh script. Best to do thi
 * If you need to re-run the provisioning (after a change) run vagrant provision <boxname> 
 
 ## Cleanup
-* cd into the dir and run vagrant destroy
+* cd into the vagrant/<os> dir and run vagrant destroy
 * This should cleanup and delete the vagrant box
 
 ## Notes
