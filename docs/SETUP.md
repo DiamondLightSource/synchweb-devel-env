@@ -104,6 +104,8 @@ VirtualBox Guest Additions: Starting.
 - Restart the virtual machine using the command `vagrant reload` to enable virtual box sync the local synchweb files with the guest machine.
 - To stop the vagrant machine from running just type `vagrant suspend`
 
+Click [here](https://www.if-not-true-then-false.com/2010/install-virtualbox-guest-additions-on-fedora-centos-red-hat-rhel/) to see more of how it is installed
+
 ## Connecting to the database
 
 To connect to the database with a database client, you would need to create a new port forwarding entry for the virtual machine on virtual box.
@@ -135,3 +137,7 @@ To connect to the database with a database client, you would need to create a ne
 - Run `vagrant reload cas --provision` to re-provision the cas machine on vagrant. This will reload and allow the newly created user to be able to login with the correct permissions
 - You can visit [https://192.168.33.12/cas/login](https://192.168.33.12/cas/login) and enter the newly created credentials to ensure that it was added successfully
 - You can then use the credential to login on the synchweb app.
+
+
+Resources:
+- JR (Oct, 2020),  VirtualBox Guest Additions on Fedora 33/32, CentOS/RHEL 8/7/6/5 retrieved from https://www.if-not-true-then-false.com/2010/install-virtualbox-guest-additions-on-fedora-centos-red-hat-rhel/
