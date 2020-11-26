@@ -105,3 +105,4 @@ venv.bak/
 
 # Remove any generated certificates
 playbooks/certs/
+vagrant/**/.vagrant
