@@ -2,7 +2,7 @@
 
 ## Installation
 
-This document will get updated if anything changes in terms if software used or if a particular version that we are currently using changes. The following are the setup procedures that needs to be followed to have the development environment ready.
+This document will get updated if anything changes in terms of software used or if a particular version changes. The following are the setup procedures that needs to be followed to have the development environment running without issues.
 
 - Download and install a virtual box for your machine [here](https://www.vagrantup.com/downloads.html)
 
@@ -19,7 +19,7 @@ This document will get updated if anything changes in terms if software used or 
   - `git clone git@github.com:DiamondLightSource/synchweb-devel-env.git` for ssh users
 
 - Build and launch the virtual machine.
-Depending on which virtual machine you want to build for, you would need to cd into the machine folder in the cloned repository. Currently we are building a virtual machine using `centos 7` so you would have to cd into the centos directory of your machine and start the virtual machine
+Depending on which virtual machine you want to build for, you would need to `cd` into the correct machine folder in the cloned repository. Currently we are building a virtual machine using `centos 7`; so you would have to cd into the `centos` directory of your machine and start the virtual machine.
 
 For centos 7, you need to:
 `cd {path_to_synchweb_devel_env}/vagrant/centos` and then type
@@ -27,7 +27,7 @@ For centos 7, you need to:
 
 This would build the centos machine and install all the required packages both for the frontend and backend apps.
 
-- Open app on a browser by visiting [https://192.168.33.10](https://192.168.33.10)
+- Open app on a browser by visiting [https://192.168.33.10](https://192.168.33.10) to see the app.
 
 - Clone the github repository of the synchweb app to your local machine and take note of the path where it is installed
   - for ssh: `git clone git@github.com:DiamondLightSource/SynchWeb.git`
@@ -60,9 +60,9 @@ then
 
 - Click on the synchweb machine and go to its settings dialog box
 
-- Click on storage menu and then on the "+" icon beside the controller IDE list
+- Click on storage menu and then on the "+" icon beside the `Controller IDE` list
 
-- Select the `VBoxGuestAdditions.iso` file to add it as a storage device, save changes and restart the virtual machine
+- Select the `VBoxGuestAdditions.iso` file to add it as a storage device, save changes and restart the virtual machine with `vagrant up`
 
 - SSH into the synchweb machine again with `su` or `sudo i`
 
@@ -121,10 +121,10 @@ To connect to the database with a database client, you would need to create a ne
   - Guest Port: `3306`
 - Click out of the table and then save all the settings
 - Connect to the database using a client with the following credentials:
-  - Database: ispyb
-  - User: ispyb
-  - Port: 3306
-  - password: integration
+  - Database: `ispyb`
+  - User: `ispyb`
+  - Port: `3306`
+  - password: `integration`
 
 ## Creating a user with privileges to access admin routes
 
