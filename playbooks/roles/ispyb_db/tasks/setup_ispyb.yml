@@ -34,7 +34,7 @@
     mysql_db:
       state: import
       name: "{{ ispyb_db_name }}"
-      target: "/tmp/ispyb-database/schema/{{ item }}.sql"
+      target: "/tmp/ispyb-database/schemas/ispyb/{{ item }}.sql"
     with_items:
       - tables
       - lookups
