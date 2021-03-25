@@ -269,10 +269,26 @@
 
     # This maps beamlinename in blsession to a proposal type
     # - Internal maps a beamline to an api "type", there are currently:
-    #     mx, gen, em
+    #     mx, gen, em, saxs, xpdf, sm
+{% if use_beamline_types %}
+   $bl_types = array(
+	array('name' => 'i02', 'group' => 'mx', 'archived' => 'true'),
+	array('name' => 'i03', 'group' => 'mx'),
+	array('name' => 'i04', 'group' => 'mx'),
+	array('name' => 'b21', 'group' => 'saxs'),
+	array('name' => 'i15-1', 'group' => 'xpdf'),
+	array('name' => 'i11', 'group' => 'gen'),
+	array('name' => 'm01', 'group' => 'em'),
+	);
+{% else %}
+   # Replaced with ansible generated data structure
     $bl_types = array('mx' => array('i02', 'i03', 'i04'),
+                      'xpdf' => array('i15-1'),
                       'gen' => array('i11'),
+                      'saxs' => array('b21'),
+                      'em' => array('m01'),
                       );
+{% endif %}
 
 
     # Webcam IPs

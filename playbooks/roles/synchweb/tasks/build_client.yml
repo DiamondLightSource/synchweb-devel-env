@@ -23,8 +23,16 @@
   become_user: vagrant
 
 - name: Build client
-  command: "npm run build"
+  command: "npm run build:dev"
   args:
     chdir: "{{synchweb_home}}/client"
   become: yes
   become_user: vagrant
+
+# If there is a client/index.html, copy this to the index.php file
+# Once apache config is updated to also read an index.html file we can remove this step
+- name: Replace index.php with an index.html file
+  command: "cp index.html index.php"
+  args:
+    chdir: "{{synchweb_home}}/client"
+  ignore_errors: yes
