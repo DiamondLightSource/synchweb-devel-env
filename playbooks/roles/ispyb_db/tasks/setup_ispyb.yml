@@ -41,3 +41,16 @@
       - data
       - routines
     ignore_errors: False
+
+  - name: Import ISPyB updates which are ahead of the release
+    mysql_db:
+      state: import
+      name: "{{ ispyb_db_name }}"
+      target: "/tmp/ispyb-database/schemas/ispyb/updates/{{ item }}.sql"
+    with_items:
+      - 2021_03_05_ContainerType_update
+      - 2021_03_08_ContainerType_update
+      - 2021_03_09_SpaceGroup_update
+      - 2021_03_19_ExperimentType_update
+      - 2021_03_19_add_drop_indices
+    ignore_errors: False
