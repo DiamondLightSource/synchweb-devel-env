@@ -4,82 +4,86 @@
 
 This document will get updated if anything changes in terms of software used or if a particular version changes. The following are the setup procedures that needs to be followed to have the development environment running without issues.
 
-- Download and install a virtual box for your machine [here](https://www.vagrantup.com/downloads.html)
+1. Download and install a virtual box for your machine [here](https://www.vagrantup.com/downloads.html).  Note, full instructions for Fedora available [here](https://computingforgeeks.com/how-to-install-virtualbox-on-fedora-linux/).
 
-- Download vagrant for your machine [here](https://www.vagrantup.com/downloads)
+1. Download and install vagrant for your machine [here](https://www.vagrantup.com/downloads)
 
-- Install vagrant for your machine [here](https://www.vagrantup.com/docs/installation)
+1. Install `pip`, a python package manager for your machine [here](https://pip.pypa.io/en/stable/installation/). Add it to your system path so pip is a recognized command
 
-- Install `pip`, a python package manager for your machine. Add it to your system path so pip is a recognized command
+1. Install Ansible via `pip` by running the following command: `pip install --user ansible`
 
-- Install Ansible via `pip` by running the following command: `pip install --user ansible`
-
-- Clone the repository to a folder on your development machine
+1. Clone the repository to a folder on your development machine
   - `git clone https://github.com/DiamondLightSource/synchweb-devel-env.git` for git https users
   - `git clone git@github.com:DiamondLightSource/synchweb-devel-env.git` for ssh users
 
-- Build and launch the virtual machine.
-Depending on which virtual machine you want to build for, you would need to `cd` into the correct machine folder in the cloned repository. Currently we are building a virtual machine using `centos 7`; so you would have to cd into the `centos` directory of your machine and start the virtual machine.
-
-For centos 7, you need to:
+6. Build and launch the virtual machine.
+Depending on which virtual machine you want to build for, you would need to `cd` into the correct machine 
+folder in the cloned repository. Currently we are building a virtual machine using `centos 7`; so you would
+have to cd into the `centos` directory of your machine and start the virtual machine. For centos 7, you need to:
 `cd {path_to_synchweb_devel_env}/vagrant/centos` and then type
 `vagrant up`
+This would build the centos machine and install all the required packages both for the frontend and backend apps.  Note, if this fails due to an invalid IP address, edit the Vagrantfile and adjust both IP addresses to fall within the valid range (which will be listed in the error message).
 
-This would build the centos machine and install all the required packages both for the frontend and backend apps.
+1. Open app on a browser by visiting [https://192.168.33.10](https://192.168.33.10) (or the adjusted IP address) to see the app - this should display with the ISPyB logo.
 
-- Open app on a browser by visiting [https://192.168.33.10](https://192.168.33.10) to see the app.
-
-- Clone the github repository of the synchweb app to your local machine and take note of the path where it is installed
+1. Clone the github repository of the SynchWeb app to your local machine and take note of the 
+path where it is installed
   - for ssh: `git clone git@github.com:DiamondLightSource/SynchWeb.git`
   - for https: `git clone https://github.com/DiamondLightSource/SynchWeb.git`
 
-## Synching local files & folders for Centos
+## Synching local files & folders for Centos - using VirtualBox Guest Additions
 
-After going through all the installation and set up process, you would need to be able to have changes in your local files and folders reflect on the browser.
+The following instructions enable use of `rsync` - to allow your local SynchWeb code to be sync'd 
+with the above synchweb VM - i.e. allowing development changes to be picked up.  Note, for these to 
+work, the code needs to be built locally before sync'ing - instructions [here](https://github.com/DiamondLightSource/SynchWeb) 
+(otherwise accessing the app in a browser will show up as 'Forbidden').
+These instructions are based on details [here](https://www.if-not-true-then-false.com/2010/install-virtualbox-guest-additions-on-fedora-centos-red-hat-rhel/).
 
-- SSH into the synchweb virtual machine by typing:
+1. SSH into the synchweb virtual machine:
 `vagrant ssh synchweb`
 
-- change permission to root user by typing:
-`su` or `sudo i`
+1. change permission to root user:
+`su` or `sudo -i`
 
-- Ensure you are running the up to date kernel for centos 7
-`yum update kernel*`
-then 
-`reboot`
-
-- Create a directory to mount the virtual box guest addition .iso file
+1. Create a directory to mount the virtual box guest addition .iso file
 `mkdir /media/virtualBoxGuestAdditions`
 
-- mount this folder to the `cdrom` path of the virtual machine
-`mount -r /dev/cdrom /media/virtualBoxGuestAdditions`
+1. Ensure you are running the up to date kernel for centos 7
+`yum update kernel*`
+then 
+`shutdown`
 
-- Shutdown the virtual machine with `vagrant halt`
+1. Download the `VBoxGuestAdditions.iso` from [here](https://www.virtualbox.org/wiki/Testbuilds)
 
-- Go to the virtualBox application
+1. Go to the VirtualBox application
 
-- Click on the synchweb machine and go to its settings dialog box
+1. Click on the synchweb machine and go to its settings dialog box
 
-- Click on storage menu and then on the "+" icon beside the `Controller IDE` list
+1. Click on storage menu and then on the "+" icon beside the `Controller IDE` list (to add an optical drive)
 
-- Select the `VBoxGuestAdditions.iso` file to add it as a storage device, save changes and restart the virtual machine with `vagrant up`
+1. Select the `VBoxGuestAdditions.iso` file downloaded earlier to add it as a storage device, save changes and restart the virtual machine with `vagrant up`
 
-- SSH into the synchweb machine again with `su` or `sudo i`
+1. SSH into the synchweb machine again and change to root via `su` or `sudo -i`
 
-- Install the EPEL repo for Centos 7 and some packages which are needed
+1. Install the EPEL repo for Centos 7 and some packages which are needed
+
 `rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm`
+
 `yum install gcc kernel-devel kernel-headers dkms make bzip2 perl`
 
-- Add the KERN environment variable
-`KERN_DIR=/usr/src/kernels/`uname -r`
+12. Add the KERN environment variable
+```KERN_DIR=/usr/src/kernels/`uname -r` ```
 
-- Export the environment variable
+1. Export the environment variable
 `export KERN_DIR`
 
-- Change directory to the virtual box guest addition folder
+1. Mount the `virtualBoxGuestAdditions` folder to the `cdrom` path of the virtual machine - to gain access to the attached iso file
+`mount -r /dev/cdrom /media/virtualBoxGuestAdditions`
+
+1. Change directory to the virtual box guest addition folder
 `cd /media/VirtualBoxGuestAdditions`
 
-- Install the virtual box guest addition package
+1. Install the virtual box guest addition package
 `./VBoxLinuxAdditions.run`
 Output will look like this:
 
@@ -95,25 +99,24 @@ VirtualBox Guest Additions: Running kernel modules will not be replaced until th
 VirtualBox Guest Additions: Starting.
 ```
 
-- Reboot virtual machine system
-`reboot`
+17. Shutdown the virtual machine
+`shutdown`
 
-- Uncomment the `synchweb.vm.synced_folder "src/", "/var/www/sites/"` line of code in the `{path_to_synchweb}/vagrant/centos/Vagrantfile` to allow folder/files sync when vagrant is restarted
-  - The `src/` path of that line should match the path where you cloned the synchweb repository earlier. If it is in the `path_to_synchweb}/vagrant/centos/src` folder then you can leave it as it is.
+1. Uncomment the `synchweb.vm.synced_folder "src/", "/var/www/sites/synchweb"` line of code in the `{path_to_synchweb-devel-env}/vagrant/centos/Vagrantfile` to allow folder/files sync when vagrant is restarted
+  - The `src/` path of that line should be changed to point to the location of the SynchWeb repository
+  cloned earlier (relative paths are ok).
 
-- Restart the virtual machine using the command `vagrant reload` to enable virtual box sync the local synchweb files with the guest machine.
-- To stop the vagrant machine from running just type `vagrant suspend`
-
-Click [here](https://www.if-not-true-then-false.com/2010/install-virtualbox-guest-additions-on-fedora-centos-red-hat-rhel/) to see more of how it is installed
+19. Restart the virtual machine using the command `vagrant reload` (outside of the VM) to enable the local synchweb files to be sync'd with the guest machine
+1. To stop the vagrant machine from running just type `vagrant suspend`
 
 ## Connecting to the database
 
 To connect to the database with a database client, you would need to create a new port forwarding entry for the virtual machine on virtual box.
 
-- Select the Synchweb machine in virtual box
+- Select the synchweb machine in virtualbox
 - Click on the `settings` menu, a dialog box will appear
 - Select the `Network` tab and ensure you are on the `Adapter 1` tab
-- Click on port forwarding, a new dialog box will appear
+- Expand '`Advanced` and click on `Port Forwarding`.  A new dialog box will appear.
 - Click on the "+" icon on the screen and then enter the required values for the database port
   - name can be anything
   - protocol: `TCP`
@@ -138,6 +141,3 @@ To connect to the database with a database client, you would need to create a ne
 - You can visit [https://192.168.33.12/cas/login](https://192.168.33.12/cas/login) and enter the newly created credentials to ensure that it was added successfully
 - You can then use the credential to login on the synchweb app.
 
-
-Resources:
-- JR (Oct, 2020),  VirtualBox Guest Additions on Fedora 33/32, CentOS/RHEL 8/7/6/5 retrieved from https://www.if-not-true-then-false.com/2010/install-virtualbox-guest-additions-on-fedora-centos-red-hat-rhel/

@@ -15,14 +15,8 @@ The test data includes a couple of visits registered to the user:password 'boaty
 
 
 ## Setup
-* Clone this repository
-* Install vagrant, virtualbox and ansible on your host (e.g. apt install ansible vagrant virtualbox-qt)
-* Decide which OS you want centos or debian (centos is recommended and used more often)
-* cd into the dir (e.g. vagrant/centos)
-* The default setup uses CAS VM for authentication. Run "vagrant up" and wait for both CAS and SynchWeb machines to start
-* If you just want the web stack, run "vagrant up synchweb". (See authentication notes below.)
-* Try using a web browser on https://192.168.33.10 to see the Synchweb pages
-* If you want to edit the source code from the host, uncomment the Vagrant file line  'lamp.vm.synced_folder "src/", "/var/www/sites/"'. The SynchWeb source code will be synchronized to src sub directory (e.g. centos/src).
+* Clone this repository: `git clone https://github.com/DiamondLightSource/synchweb-devel-env.git`
+* Set up the development environment (including VMs for SynchWeb and CAS) by following the instructions [here](./docs/SETUP.md)
 
 ### Authentication
 * Authentication types supported: dummy and cas. 
@@ -42,12 +36,12 @@ Some features may require your host being able to resolve the hostname of the bo
 #### LDAP
 SynchWeb can be configured to talk to an LDAP server.
 An LDAP role is not currently included here.
-However you can get one from here https://github.com/rgl/ldap-vagrant.git
+However you can get one from [here](https://github.com/rgl/ldap-vagrant.git)
 Change the SynchWeb config.php settings to talk to the ldap server e.g. ldap://192.168.33.xx (see ldap Vagrant box for ip addr).
-You can add users (e.g. boaty) into the LDAP provision.sh script. Best to do this before bringing the box up.
+You can add users (e.g. boaty) into the LDAP provision.sh script. Do this before bringing the box up.
 
 ## Reprovision
-* If you need to re-run the provisioning (after a change) run vagrant provision <boxname> 
+* If you need to re-run the provisioning (after a change) run `vagrant provision <boxname>` 
 
 ## Cleanup
 * cd into the vagrant/<os> dir and run vagrant destroy
