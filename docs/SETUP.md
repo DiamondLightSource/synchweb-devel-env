@@ -8,7 +8,7 @@ This document will get updated if anything changes in terms of software used or 
 
 1. Download and install vagrant for your machine [here](https://www.vagrantup.com/downloads)
 
-1. Install `pip`, a python package manager for your machine [here](https://pip.pypa.io/en/stable/installation/). Add it to your system path so pip is a recognized command
+1. If necessary, install `pip`, a python package manager for your machine [here](https://pip.pypa.io/en/stable/installation/). Add it to your system path so pip is a recognized command.
 
 1. Install Ansible via `pip` by running the following command: `pip install --user ansible`
 
@@ -35,7 +35,7 @@ path where it is installed
 
 The following instructions enable use of `rsync` - to allow your local SynchWeb code to be sync'd 
 with the above synchweb VM - i.e. allowing development changes to be picked up.  Note, for these to 
-work, the code needs to be built locally before sync'ing - instructions [here](https://github.com/DiamondLightSource/SynchWeb) 
+work, the client code needs to be built locally before sync'ing - instructions [here](https://github.com/DiamondLightSource/SynchWeb) 
 (otherwise accessing the app in a browser will show up as 'Forbidden').
 These instructions are based on details [here](https://www.if-not-true-then-false.com/2010/install-virtualbox-guest-additions-on-fedora-centos-red-hat-rhel/).
 
@@ -113,7 +113,7 @@ VirtualBox Guest Additions: Starting.
 
 To connect to the database with a database client, you would need to create a new port forwarding entry for the virtual machine on virtual box.
 
-- Select the synchweb machine in virtualbox
+- Select the synchweb machine in VirtualBox
 - Click on the `settings` menu, a dialog box will appear
 - Select the `Network` tab and ensure you are on the `Adapter 1` tab
 - Expand '`Advanced` and click on `Port Forwarding`.  A new dialog box will appear.
