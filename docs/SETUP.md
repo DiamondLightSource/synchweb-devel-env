@@ -4,7 +4,7 @@
 
 This document will get updated if anything changes in terms of software used or if a particular version changes. The following are the setup procedures that needs to be followed to have the development environment running without issues.
 
-1. Download and install a virtual box for your machine [here](https://www.vagrantup.com/downloads.html).  Note, full instructions for Fedora available [here](https://computingforgeeks.com/how-to-install-virtualbox-on-fedora-linux/).
+1. Download and install VirtualBox for your machine [here](https://www.virtualbox.org/wiki/Downloads).  Note, full instructions for Fedora available [here](https://computingforgeeks.com/how-to-install-virtualbox-on-fedora-linux/).
 
 1. Download and install vagrant for your machine [here](https://www.vagrantup.com/downloads)
 
@@ -22,7 +22,8 @@ folder in the cloned repository. Currently we are building a virtual machine usi
 have to cd into the `centos` directory of your machine and start the virtual machine. For centos 7, you need to:
 `cd {path_to_synchweb_devel_env}/vagrant/centos` and then type
 `vagrant up`
-This would build the centos machine and install all the required packages both for the frontend and backend apps.  Note, if this fails due to an invalid IP address, edit the Vagrantfile and adjust both IP addresses to fall within the valid range (which will be listed in the error message).
+. This would build the centos machine and install all the required packages both for the frontend and backend apps.  **Note**, if this fails due to an invalid IP address, edit the Vagrantfile and adjust both IP addresses to fall within the valid range (which will be listed in the error message). In this situation,
+also update the IP addresses in the files, `playbooks/roles/cas/files/system/etc/hosts` and `playbooks/roles/synchweb/files/system/etc/hosts`. Once done, reprovision the VMs via `vagrant provision`.
 
 1. Open app on a browser by visiting [https://192.168.33.10](https://192.168.33.10) (or the adjusted IP address) to see the app - this should display with the ISPyB logo.
 
@@ -39,6 +40,10 @@ work, the client code needs to be built locally before sync'ing - instructions [
 (otherwise accessing the app in a browser will show up as 'Forbidden').
 These instructions are based on details [here](https://www.if-not-true-then-false.com/2010/install-virtualbox-guest-additions-on-fedora-centos-red-hat-rhel/).
 
+Note, there is a vagrant plugin available to automatically install the Guest Additions, however this does 
+not work on the Fedora VM specified here. If using a different VM, this can be installed via, 
+`vagrant plugin install vagrant-vbguest`. 
+
 1. SSH into the synchweb virtual machine:
 `vagrant ssh synchweb`
 
@@ -51,7 +56,7 @@ These instructions are based on details [here](https://www.if-not-true-then-fals
 1. Ensure you are running the up to date kernel for centos 7
 `yum update kernel*`
 then 
-`shutdown`
+`shutdown` (note, the VM needs to be shutdown to attach an optical drive).
 
 1. Download the `VBoxGuestAdditions.iso` from [here](https://www.virtualbox.org/wiki/Testbuilds)
 
@@ -111,7 +116,7 @@ VirtualBox Guest Additions: Starting.
 
 ## Connecting to the database
 
-To connect to the database with a database client, you would need to create a new port forwarding entry for the virtual machine on virtual box.
+To connect to the database with a database client, you would need to create a new port forwarding entry for the virtual machine on VirtualBox.
 
 - Select the synchweb machine in VirtualBox
 - Click on the `settings` menu, a dialog box will appear
@@ -136,8 +141,12 @@ To connect to the database with a database client, you would need to create a ne
 - Go to the `{path_to_synchweb}/playbooks/roles/cas/files/apereo-cas/etc/cas/config/users.txt` file and create an entry with the following format like so `{username}::{password}`
 - Go to the database client
   - insert a new entry in the `Person` table. Ensure that the `login` field matches the `{username}` you entered in the `users.txt` file
-  - Insert a new entry in the `UserGroup_has_Person` table with the corresponding `id` of the needed `UserGroup` and `id` of the newly `Person` you created
+  - Insert a new entry in the `UserGroup_has_Person` table with the corresponding `id` of the needed `UserGroup` and `id` of the newly `Person` you created.  The `super_admin` and `developers` groups should be included.
 - Run `vagrant reload cas --provision` to re-provision the cas machine on vagrant. This will reload and allow the newly created user to be able to login with the correct permissions
-- You can visit [https://192.168.33.12/cas/login](https://192.168.33.12/cas/login) and enter the newly created credentials to ensure that it was added successfully
+- You can visit [https://192.168.33.12/cas/login](https://192.168.33.12/cas/login) (or whatever IP address you set earlier) and enter the newly created credentials to ensure that it was added successfully
 - You can then use the credential to login on the synchweb app.
 
+## Debugging setup
+
+If errors are encountered along the way, it can be helpful to use `postman` to isolate and diagnose these.  This allows individual http requests to be sent - which can be particularly helpful
+when invoking the backend API.  If errors are being returned from the PHP code, `print_r()` can be added to the related code to return print statements in the http response.
