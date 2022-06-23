@@ -141,12 +141,19 @@ To connect to the database with a database client, you would need to create a ne
 - Go to the `{path_to_synchweb}/playbooks/roles/cas/files/apereo-cas/etc/cas/config/users.txt` file and create an entry with the following format like so `{username}::{password}`
 - Go to the database client
   - insert a new entry in the `Person` table. Ensure that the `login` field matches the `{username}` you entered in the `users.txt` file
-  - Insert a new entry in the `UserGroup_has_Person` table with the corresponding `id` of the needed `UserGroup` and `id` of the newly `Person` you created.  The `super_admin` and `developers` groups should be included.
-- Run `vagrant reload cas --provision` to re-provision the cas machine on vagrant. This will reload and allow the newly created user to be able to login with the correct permissions
+  - Insert a new entry in the `UserGroup_has_Person` table with the corresponding `id` of the needed `UserGroup` and `id` of the newly `Person` you created.
+  - Run `vagrant reload cas --provision` to re-provision the cas machine on vagrant. This will reload and allow the newly created user to be able to login with the correct permissions
 - You can visit [https://192.168.33.12/cas/login](https://192.168.33.12/cas/login) (or whatever IP address you set earlier) and enter the newly created credentials to ensure that it was added successfully
 - You can then use the credential to login on the synchweb app.
 
-## Debugging setup
+## Troubleshooting
 
-If errors are encountered along the way, it can be helpful to use `postman` to isolate and diagnose these.  This allows individual http requests to be sent - which can be particularly helpful
-when invoking the backend API.  If errors are being returned from the PHP code, `print_r()` can be added to the related code to return print statements in the http response.
+If errors are encountered along the way, it can be helpful to use `postman` to 
+isolate and diagnose these.  This allows individual http requests to be created 
+and sent - which can be particularly helpful when invoking the backend API.  If 
+errors are being returned from the PHP code, `print_r()` can be added to the 
+related code to return print statements in the http response.
+
+Note, the vagrant VM provisioning can sometimes not fully complete successfully - so 
+be careful to check for errors.  Sometimes these errors only occur on the first 
+run of `vagrant up`, but can still impact the subsequent use of the VM - i.e. a `vagrant provision` is required to force things to fully rerun.

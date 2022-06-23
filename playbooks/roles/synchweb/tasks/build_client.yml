@@ -22,9 +22,9 @@
   become: yes
   become_user: vagrant
 
-#- name: Build client
-#  command: "npm run build"
-#  args:
-#    chdir: "{{synchweb_home}}/client"
-#  become: yes
-#  become_user: vagrant
+- name: Build client
+  command: "npm run build"
+  args:
+    chdir: "{{synchweb_home}}/client"
+  become: yes
+  become_user: vagrant
