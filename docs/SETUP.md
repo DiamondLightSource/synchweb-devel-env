@@ -157,3 +157,7 @@ related code to return print statements in the http response.
 Note, the vagrant VM provisioning can sometimes not fully complete successfully - so 
 be careful to check for errors.  Sometimes these errors only occur on the first 
 run of `vagrant up`, but can still impact the subsequent use of the VM - i.e. a `vagrant provision` is required to force things to fully rerun.
+
+When running the webpack server to host the frontend client, be careful to 
+ensure that the `env.proxy.target` is set correctly - pointing at the synchweb 
+IP address configured above - including correct protocol (i.e. `http` or `https`).
