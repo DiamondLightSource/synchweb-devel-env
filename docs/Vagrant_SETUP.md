@@ -157,3 +157,8 @@ run of `vagrant up`, but can still impact the subsequent use of the VM - i.e. a 
 When running the webpack server to host the frontend client, be careful to 
 ensure that the `env.proxy.target` is set correctly - pointing at the synchweb 
 IP address configured above - including correct protocol (i.e. `http` or `https`).
+Additionally, if a `500` response is returned from client requests to the backend 
+(and the client logs, `DEPTH_ZERO_SELF_SIGNED_CERT` errors), this can be fixed by
+setting the `env.proxy.secure` input to `false` - e.g.:
+
+```npm run serve -- --env.port=8080 --env.proxy.target=http://192.168.33.10 --env.proxy.secure=false```

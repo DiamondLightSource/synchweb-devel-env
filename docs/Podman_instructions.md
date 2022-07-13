@@ -18,7 +18,9 @@ If no args are specified, an image called `synchweb-dev` is built and run,
 and the full set up is done (including copying the config files to
 override the repository defaults).
 
-This will run a container with the SynchWeb backend running and the frontend built and hosted on an httpd server.  This will be available at `http://localhost:8082`.
+This will run a container with the SynchWeb backend running and the frontend built
+and hosted on an httpd server.  This will be available at `http://localhost:8082`.
+The actual SynchWeb code will be downloaded locally and mounted into the container.
 
 ## Troubleshooting
 
@@ -38,4 +40,8 @@ is running.
 `podman exec -it synchweb-dev /bin/bash`.  From here, check the required
 php and httpd processes are running and check the logs under
 `/var/log/httpd`.
+* Sometimes the web client stops working.  Not sure why, but this can usually
+be fixed by rebuilding and relinking this.  The `rebuildClient.bash` can be
+used to simplify this process.  For Diamond users, restarting the VPN client
+can also help here.
 *  See [here](../README.md) for general advice.
