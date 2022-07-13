@@ -23,7 +23,7 @@ have to cd into the `centos` directory of your machine and start the virtual mac
 `cd {path_to_synchweb_devel_env}/vagrant/centos` and then type
 `vagrant up`
 . This would build the centos machine and install all the required packages both for the frontend and backend apps.  **Note**, if this fails due to an invalid IP address, edit the Vagrantfile and adjust both IP addresses to fall within the valid range (which will be listed in the error message). In this situation,
-also update the IP addresses in the files, `playbooks/roles/cas/files/system/etc/hosts` and `playbooks/roles/synchweb/files/system/etc/hosts`. Once done, reprovision the VMs via `vagrant provision`.
+also update the IP addresses in the files, `vagrant/playbooks/roles/cas/files/system/etc/hosts` and `vagrant/playbooks/roles/synchweb/files/system/etc/hosts`. Once done, reprovision the VMs via `vagrant provision`.
 
 1. Open app on a browser by visiting [https://192.168.33.10](https://192.168.33.10) (or the adjusted IP address) to see the app - this should display with the ISPyB logo.
 
@@ -138,7 +138,7 @@ To connect to the database with a database client, you would need to create a ne
 
 ## Creating a user with privileges to access admin routes
 
-- Go to the `{path_to_synchweb}/playbooks/roles/cas/files/apereo-cas/etc/cas/config/users.txt` file and create an entry with the following format like so `{username}::{password}`
+- Go to the `vagrant/playbooks/roles/cas/files/apereo-cas/etc/cas/config/users.txt` file and create an entry with the following format like so `{username}::{password}`
 - Go to the database client
   - insert a new entry in the `Person` table. Ensure that the `login` field matches the `{username}` you entered in the `users.txt` file
   - Insert a new entry in the `UserGroup_has_Person` table with the corresponding `id` of the needed `UserGroup` and `id` of the newly `Person` you created.
