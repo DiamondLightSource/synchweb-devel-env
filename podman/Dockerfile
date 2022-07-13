@@ -14,11 +14,10 @@ ENV PATH="${PATH}:/opt/remi/php54/root/usr/bin:/opt/remi/php54/root/usr/sbin"
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 RUN php composer-setup.php --install-dir=/tmp --filename=composer
  
-# Copy config and certificate files (latter if required)
+# Copy config file and adjust access permissions
 COPY httpd.conf /etc/httpd/conf/
-#RUN mkdir /etc/pki/tls/certs/synchweb && mkdir /etc/pki/tls/private/synchweb
- 
 RUN chmod 744 /etc/httpd/conf/httpd.conf
- 
+
+# Set access port and startup script 
 EXPOSE 8082
 ENTRYPOINT ["/app/SynchWeb/entrypoint.bash"]
