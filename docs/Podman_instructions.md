@@ -38,3 +38,4 @@ is running.
 `podman exec -it synchweb-dev /bin/bash`.  From here, check the required
 php and httpd processes are running and check the logs under
 `/var/log/httpd`.
+*  See [here](../README.md) for general advice.
