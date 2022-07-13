@@ -12,8 +12,8 @@ valid connection string data to an ISPyB database - i.e. via the `$isb` variable
 ## Setup
 1. Clone this repository: `git clone https://github.com/DiamondLightSource/synchweb-devel-env.git`
 1. Edit `config.php` adjusting details as appropriate (at a minimum setting a valid value for `$isb`)
-1. Run `setup.bash` - note, this can take two input args:
-``` setup.bash <image-name> <run-initial-setup=1,0>```.
+1. Run `setup_synchweb.bash` - note, this can take two input args:
+``` setup_synchweb.bash <image-name> <run-initial-setup=1,0>```.
 If no args are specified, an image called `synchweb-dev` is built and run, 
 and the full set up is done (including copying the config files to
 override the repository defaults).
@@ -26,7 +26,7 @@ If SynchWeb does not work as expected, review the following:
 
 * Occasionally the podman image fails to build fully - i.e. errors are 
 encountered in some of its configuration steps.  This, however, may not 
-stop the image from being created.  As a result, the `setup.bash` script
+stop the image from being created.  As a result, the `setup_synchweb.bash` script
 forces a full build rebuild each time (using the `--no-cache` option) - so
 rerunning may fix the problem.  Keep an eye out for errors in the output, 
 anyway.
