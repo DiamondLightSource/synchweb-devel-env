@@ -8,7 +8,6 @@ and hosts the frontend web client using httpd. For this to work, the
 `config.php` file included in this repo must be updated to include
 valid connection string data to an ISPyB database - i.e. via the `$isb` variable. 
 
-
 ## Setup
 1. Clone this repository: `git clone https://github.com/DiamondLightSource/synchweb-devel-env.git`
 1. Edit `config.php` adjusting details as appropriate (at a minimum setting a valid value for `$isb`)
@@ -21,6 +20,13 @@ override the repository defaults).
 This will run a container with the SynchWeb backend running and the frontend built
 and hosted on an httpd server.  This will be available at `http://localhost:8082`.
 The actual SynchWeb code will be downloaded locally and mounted into the container.
+
+## Running on Windows
+
+The devenv can be set up to run on Windows using WSL (Windows Subsystem for Linux).  Set this up
+with the required tools (VS Code is recommended) - guidance 
+[here](https://docs.microsoft.com/en-us/windows/wsl/setup/environment).  Once done, start an instance
+of the default linux distro (Ubuntu) and follow the `Setup` instructions above.
 
 ## Troubleshooting
 
