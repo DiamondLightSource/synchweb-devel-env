@@ -1,4 +1,4 @@
-# Development Environment Setup
+# Vagrant Development Environment Setup
 
 ## Installation
 
@@ -148,11 +148,7 @@ To connect to the database with a database client, you would need to create a ne
 
 ## Troubleshooting
 
-If errors are encountered along the way, it can be helpful to use `postman` to 
-isolate and diagnose these.  This allows individual http requests to be created 
-and sent - which can be particularly helpful when invoking the backend API.  If 
-errors are being returned from the PHP code, `print_r()` can be added to the 
-related code to return print statements in the http response.
+See [here](../README.md) for general advice.
 
 Note, the vagrant VM provisioning can sometimes not fully complete successfully - so 
 be careful to check for errors.  Sometimes these errors only occur on the first 
