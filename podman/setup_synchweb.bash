@@ -4,6 +4,11 @@
 # Description   : Script to setup SynchWeb running in a podman container.  Note, the config.php file should be setup appropriately before running.
 # Args          : $1 - name of podman image to create and run - default: 'synchweb-dev', $2 - run initial container setup - default:'1' (run set up)
 ############################################################
+
+set -e # exit immediately if any command fails
+trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
+trap 'echo "\"${last_command}\" command failed with exit code $?."' EXIT # give details of error on exit
+
 imageName=synchweb-dev
 if [ $1 ]
 then
@@ -28,9 +33,10 @@ then
     echo Cloning SynchWeb locally
     git clone https://github.com/DiamondLightSource/SynchWeb.git
 
-    echo Setting up web client
+    echo Setting up web client locally
     sudo apt-get -y update
 
+    # set up appropriate version of node to use (v18 will fail with current code)
     echo Installing node....
     sudo apt-get -y install curl
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
@@ -39,8 +45,8 @@ then
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
     nvm install v16.15
 # if the above command doesn't work for your linux distro, try either of:
-#    sudo dnf module switch-to nodejs:16 
-#    module load node/16.15 
+#   sudo dnf module switch-to nodejs:16 
+#   module load node/16.15 
 
     echo Installing webpack
     sudo apt-get -y install webpack
@@ -75,7 +81,7 @@ fi
 echo Building $imageName image...
 podman build . -f Dockerfile --format docker -t $imageName --no-cache
 
-echo Starting webpack client...
+echo Building webpack client...
 cd SynchWeb/client
 if [ -f index.php ]
 then
