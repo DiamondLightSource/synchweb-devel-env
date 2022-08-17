@@ -104,7 +104,7 @@ venv.bak/
 .mypy_cache/
 
 # Remove any generated certificates
-playbooks/certs/
+vagrant/playbooks/certs/
 
 # .vagrant files
 .vagrant
