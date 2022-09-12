@@ -14,7 +14,7 @@ valid connection string data to an ISPyB database - i.e. via the `$isb` variable
 1. Adjust `setup_synchweb.bash` to point to the correct `Dockerfile` to use in the command: 
 `podman build . -f Dockerfile --format docker -t $imageName --no-cache`
   - `Docker` to build with php5.4
-  - `Docker-7.4` to build with php7.4 (requires the `SynchWeb` codebase to be at this level)
+  - `Docker-7.4` to build with php7.4 (requires the `SynchWeb` codebase to be at this level).  If using 7.4 also adjust the entrypoint.bash file to use the correct PHP_INI_SCAN_DIR definition.
 1. Run `setup_synchweb.bash` - note, this can take two input args:
 ``` setup_synchweb.bash <image-name> <run-initial-setup=1,0>```.
 If no args are specified, an image called `synchweb-dev` is built and run, 
