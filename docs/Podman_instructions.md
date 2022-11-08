@@ -28,6 +28,13 @@ with the required tools (VS Code is recommended) - guidance
 [here](https://docs.microsoft.com/en-us/windows/wsl/setup/environment).  Once done, start an instance
 of the default linux distro (Ubuntu) and follow the `Setup` instructions above.
 
+## Running once Built
+
+Once the container is built then it should not need changing unless you update the container definition, the code is mounted from outside. 
+To run the container without building use:
+
+```run_synchweb.bash``` - note this can take multiple arguments run ```run_synchweb.bash --help``` to see what these are.
+
 ## Troubleshooting
 
 If SynchWeb does not work as expected, review the following:

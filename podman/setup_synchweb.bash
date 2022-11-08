@@ -37,6 +37,8 @@ then
 fi
 echo Install linux apps using: $installCmd
 
+baseDir=`dirname $BASH_SOURCE`
+
 if [ ! -d SynchWeb ]
 then
     echo Cloning SynchWeb locally
@@ -68,38 +70,15 @@ then
     cd -
 fi
 
+
+
 if [ $initialSetUp -eq 1 ]
 then
-    echo Running initial set up
-    if [ -f config.php ] && [ -f php-fpm.conf ] && [ -f entrypoint.bash ] && [ -f httpd.conf ]
-    then 
-        cp config.php SynchWeb/api/
-        if [ -f php.ini ]
-        then
-            cp php.ini SynchWeb/
-        fi
-        cp php-fpm.conf SynchWeb/
-        cp entrypoint.bash SynchWeb/
-    else
-        echo Missing file - need to have config.php, php-fpm.conf, entrypoint.bash and httpd.conf in this directory
-        exit 1
-    fi
-    chmod 755 SynchWeb/entrypoint.bash
+    initialSetUpFlag="-s"
+else
+    initialSetUpFlag=""
 fi
 
-echo Building $imageName image...
-podman build . -f Dockerfile --format docker -t $imageName --no-cache
+$baseDir/run_synchweb.bash -b $initialSetUpFlag $imageName
 
-echo Building webpack client...
-cd SynchWeb/client
-if [ -f index.php ]
-then
-    unlink index.php
-fi
-npm run build:dev && export HASH=$(ls -t dist | head -n1) && ln -sf dist/${HASH}/index.html index.php
-cd -
-
-echo Starting $imageName container
-podman run --security-opt label=disable -it -p 8082:8082 \
-    --mount type=bind,source=./SynchWeb,destination=/app/SynchWeb \
-    $imageName &
+$baseDir/rebuildClient.bash
