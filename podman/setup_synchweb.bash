@@ -1,15 +1,23 @@
 #!/bin/bash
 ############################################################
+helpText="
 # Name          : setup_synchweb.bash
-# Description   : Script to setup SynchWeb running in a podman container.  Note, the config.php file should be setup appropriately before running.
+# Description   : Script to setup SynchWeb running in a podman container.  
+                  Note, the config.php file should be setup appropriately before running.
 # Args          : $1 - name of podman image to create and run - default: 'synchweb-dev', 
 #               : $2 - run initial container setup - default:'1' (run set up)
-#               : $3 - install command to use - default:"sudo apt-get -y" - adjust for different linux distros
+#               : $3 - install command to use - default:\"sudo apt-get -y\" - adjust for 
+                         different linux distros"
 ############################################################
 
 set -e # exit immediately if any command fails
 trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
-trap 'echo "\"${last_command}\" command failed with exit code $?."' EXIT # give details of error on exit
+trap 'code=$?; if ! [ $code -eq 0 ]; then echo "\"${last_command}\" command failed with exit code $code."; fi' EXIT # give details of error on exit
+
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+ echo "$helpText"
+ exit 0
+fi
 
 imageName=synchweb-dev
 if [ $1 ]
@@ -37,7 +45,7 @@ then
 fi
 echo Install linux apps using: $installCmd
 
-baseDir=`dirname $BASH_SOURCE`
+SCRIPT_DIR=`dirname $BASH_SOURCE`
 
 if [ ! -d SynchWeb ]
 then
@@ -70,8 +78,6 @@ then
     cd -
 fi
 
-
-
 if [ $initialSetUp -eq 1 ]
 then
     initialSetUpFlag="-s"
@@ -79,6 +85,6 @@ else
     initialSetUpFlag=""
 fi
 
-$baseDir/run_synchweb.bash -b $initialSetUpFlag $imageName
+$SCRIPT_DIR/run_synchweb.bash -b $initialSetUpFlag $imageName
 
-$baseDir/rebuildClient.bash
+$SCRIPT_DIR/rebuildClient.bash

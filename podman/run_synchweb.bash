@@ -2,19 +2,24 @@
 ############################################################
 helpText="
 Name          : run_synchweb.bash
-Description   : Script to run the SynchWeb in a podman container, and optionally build it. 
+Description   : Script to run the SynchWeb in a podman container,
+                  and optionally build it. 
 Args          : -b - build the image
               : -s - copy setup scripts before run
-              : -n <name> name of the container - default: 'synchweb-dev'"
+              : -n <name> name of the container - default: 'synchweb-dev'
+Prereq: For the pod to mount the images it needs to be mounted on the host
+        filesystem in /dls.  You could mount this on your local filesystem 
+        with sshfs, if you do make sure it is mounted with -o ro,allow_other"
 ############################################################
 
 set -e # exit immediately if any command fails
 trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
-trap 'if ! [ $? -eq 0 ]; then echo "\"${last_command}\" command failed with exit code $?."; fi' EXIT # give details of error on exit
+trap 'code=$?; if ! [ $code -eq 0 ]; then echo "\"${last_command}\" command failed with exit code $code."; fi' EXIT # give details of error on exit
 
 buildImage=0
 initialSetUp=0
 imageName=synchweb-dev
+dls_dir="/dls"
 
 for i in "$@"
 do
@@ -36,6 +41,10 @@ esac
 done
 
 echo Running podman image with name: $imageName
+
+echo Stop and remove previous container image
+podman stop --ignore synchweb-dev
+podman rm --ignore synchweb-dev
 
 if [ $initialSetUp -eq 1 ]
 then
@@ -59,10 +68,10 @@ fi
 if [ $buildImage -eq 1 ]
 then
 
-    echo Building $imageName image...
+    echo Building $imageName image
     podman build . -f Dockerfile --format docker -t $imageName --no-cache
 
-    echo Building webpack client...
+    echo Building webpack client
     cd SynchWeb/client
     if [ -f index.php ]
     then
@@ -72,13 +81,18 @@ then
     cd -
 fi
 
-echo Stop and remove previous container image
-podman stop --ignore synchweb-dev
-podman rm --ignore synchweb-dev
-
+# If the dls directory exists then mount it into the container
+if [ -d "$dls_dir" ]; then
+    mountDLS="--mount type=bind,source=$dls_dir,destination=/dls"
+fi
+    
 echo
 echo Starting $imageName container as $imageName
 podman run --security-opt label=disable -it -p 8082:8082 \
     --mount type=bind,source=./SynchWeb,destination=/app/SynchWeb \
-    --name=$imageName --detach $imageName 
- 
+    $mountDLS \
+    --name=$imageName --detach \
+    $imageName 
+
+echo " See logs: podman logs -f synchweb-dev"
+echo "Enter pod: podman exec -it synchweb-dev /bin/bash"
