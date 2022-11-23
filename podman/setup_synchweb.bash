@@ -1,15 +1,23 @@
 #!/bin/bash
 ############################################################
+helpText="
 # Name          : setup_synchweb.bash
-# Description   : Script to setup SynchWeb running in a podman container.  Note, the config.php file should be setup appropriately before running.
+# Description   : Script to setup SynchWeb running in a podman container.  
+                  Note, the config.php file should be setup appropriately before running.
 # Args          : $1 - name of podman image to create and run - default: 'synchweb-dev', 
 #               : $2 - run initial container setup - default:'1' (run set up)
-#               : $3 - install command to use - default:"sudo apt-get -y" - adjust for different linux distros
+#               : $3 - install command to use - default:\"sudo apt-get -y\" - adjust for 
+                         different linux distros"
 ############################################################
 
 set -e # exit immediately if any command fails
 trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
-trap 'echo "\"${last_command}\" command failed with exit code $?."' EXIT # give details of error on exit
+trap 'code=$?; if ! [ $code -eq 0 ]; then echo "\"${last_command}\" command failed with exit code $code."; fi' EXIT # give details of error on exit
+
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+ echo "$helpText"
+ exit 0
+fi
 
 imageName=synchweb-dev
 if [ $1 ]
@@ -36,6 +44,8 @@ then
     installCmd=$3
 fi
 echo Install linux apps using: $installCmd
+
+SCRIPT_DIR=`dirname $BASH_SOURCE`
 
 if [ ! -d SynchWeb ]
 then
@@ -70,36 +80,11 @@ fi
 
 if [ $initialSetUp -eq 1 ]
 then
-    echo Running initial set up
-    if [ -f config.php ] && [ -f php-fpm.conf ] && [ -f entrypoint.bash ] && [ -f httpd.conf ]
-    then 
-        cp config.php SynchWeb/api/
-        if [ -f php.ini ]
-        then
-            cp php.ini SynchWeb/
-        fi
-        cp php-fpm.conf SynchWeb/
-        cp entrypoint.bash SynchWeb/
-    else
-        echo Missing file - need to have config.php, php-fpm.conf, entrypoint.bash and httpd.conf in this directory
-        exit 1
-    fi
-    chmod 755 SynchWeb/entrypoint.bash
+    initialSetUpFlag="-s"
+else
+    initialSetUpFlag=""
 fi
 
-echo Building $imageName image...
-podman build . -f Dockerfile --format docker -t $imageName --no-cache
+$SCRIPT_DIR/run_synchweb.bash -b $initialSetUpFlag $imageName
 
-echo Building webpack client...
-cd SynchWeb/client
-if [ -f index.php ]
-then
-    unlink index.php
-fi
-npm run build:dev && export HASH=$(ls -t dist | head -n1) && ln -sf dist/${HASH}/index.html index.php
-cd -
-
-echo Starting $imageName container
-podman run --security-opt label=disable -it -p 8082:8082 \
-    --mount type=bind,source=./SynchWeb,destination=/app/SynchWeb \
-    $imageName &
+$SCRIPT_DIR/rebuildClient.bash
