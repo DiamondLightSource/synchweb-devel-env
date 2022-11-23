@@ -7,7 +7,7 @@ helpText="
 # Args          : $1 - name of podman image to create and run - default: 'synchweb-dev', 
 #               : $2 - run initial container setup - default:'1' (run set up)
 #               : $3 - install command to use - default:\"sudo apt-get -y\" - adjust for 
-                         different linux distros"
+                       different linux distros"
 ############################################################
 
 set -e # exit immediately if any command fails
