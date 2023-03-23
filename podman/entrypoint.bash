@@ -2,7 +2,7 @@
 echo --------------------------------------------------
 echo SynchWeb container started - now setting up required services...
 export COMPOSER_ALLOW_SUPERUSER=1 #This allows compose to run as root in this container
-cd /app/SynchWeb/api && /tmp/composer install && /tmp/composer udate
+cd /app/SynchWeb/api && /tmp/composer install && /tmp/composer update
 httpd -f /etc/httpd/conf/httpd.conf -k start
 if [[ "$1" == "-7" ]]; then
     PHP_INI_SCAN_DIR=/etc/php.d php-fpm -e -y php-fpm.conf -F -O -c php.ini &
