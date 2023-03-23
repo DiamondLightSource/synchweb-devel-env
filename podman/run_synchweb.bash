@@ -7,6 +7,8 @@ Description   : Script to run the SynchWeb in a podman container,
 Args          : -b - build the image
               : -s - copy setup scripts before run
               : -n <name> name of the container - default: 'synchweb-dev'
+              : -7 use php version 7 instead of 5.4 when building the image
+              : -f tail the logs after start
 Prereq: For the pod to mount the images it needs to be mounted on the host
         filesystem in /dls.  You could mount this on your local filesystem 
         with sshfs, if you do make sure it is mounted with -o ro,allow_other"
@@ -19,6 +21,8 @@ trap 'code=$?; if ! [ $code -eq 0 ]; then echo "\"${last_command}\" command fail
 buildImage=0
 initialSetUp=0
 imageName=synchweb-dev
+phpVersion="5"
+finalCommand=""
 dls_dir="/dls"
 
 for i in "$@"
@@ -29,6 +33,12 @@ case $i in
     ;;
     -s)
     initialSetUp=1
+    ;;
+    -7)
+    phpVersion="7"
+    ;;
+    -f)
+    finalCommand="logs"
     ;;
     -h|--help)
     echo "$helpText"
@@ -69,7 +79,10 @@ if [ $buildImage -eq 1 ]
 then
 
     echo Building $imageName image
-    podman build . -f Dockerfile --format docker -t $imageName --no-cache
+    if [ "$phpVersion" = "7" ]; then
+        dockerFieldSuffic="-7.4.dockerfile"
+    fi
+    podman build . -f Dockerfile$dockerFieldSuffic --format docker -t $imageName --no-cache
 
     echo Building webpack client
     cd SynchWeb/client
@@ -88,11 +101,18 @@ fi
     
 echo
 echo Starting $imageName container as $imageName
-podman run --security-opt label=disable -it -p 8082:8082 \
+podman run --security-opt label=disable -it -p 8082:8082 -p 9003:9003\
     --mount type=bind,source=./SynchWeb,destination=/app/SynchWeb \
     $mountDLS \
     --name=$imageName --detach \
     $imageName 
 
-echo " See logs: podman logs -f synchweb-dev"
-echo "Enter pod: podman exec -it synchweb-dev /bin/bash"
+case "$finalCommand" in
+  "logs")
+  podman logs -f synchweb-dev
+  ;;
+  *)
+  echo " See logs: podman logs -f synchweb-dev"
+  echo "Enter pod: podman exec -it synchweb-dev /bin/bash"
+  ;;
+esac
