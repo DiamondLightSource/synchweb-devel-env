@@ -11,10 +11,9 @@ valid connection string data to an ISPyB database - i.e. via the `$isb` variable
 ## Setup
 1. Clone this repository: `git clone https://github.com/DiamondLightSource/synchweb-devel-env.git`
 1. Edit `config.php` adjusting details as appropriate (at a minimum setting a valid value for `$isb`)
-1. Adjust `setup_synchweb.bash` to point to the correct `Dockerfile` to use in the command: 
-`podman build . -f Dockerfile --format docker -t $imageName --no-cache`
-  - `Docker` to build with php5.4
-  - `Docker-7.4` to build with php7.4 (requires the `SynchWeb` codebase to be at this level).  If using 7.4 also adjust the entrypoint.bash file to use the correct PHP_INI_SCAN_DIR definition.
+1. Adjust `setup_synchweb.bash` to create the correct `Dockerfile`, for php7 add a -7 top the build command: 
+  - `$SCRIPT_DIR/run_synchweb.bash -b $initialSetUpFlag $imageName` to build with php5.4
+  - `$SCRIPT_DIR/run_synchweb.bash -b $initialSetUpFlag $imageName -7` to build with php7.4 (requires the `SynchWeb` codebase to be at this level).
 1. Run `setup_synchweb.bash` - note, this can take two input args:
 ``` setup_synchweb.bash <image-name> <run-initial-setup=1,0>```.
 If no args are specified, an image called `synchweb-dev` is built and run, 
@@ -38,6 +37,8 @@ Once the container is built then it should not need changing unless you update t
 To run the container without building use:
 
 ```run_synchweb.bash``` - note this can take multiple arguments run ```run_synchweb.bash --help``` to see what these are.
+
+To run the front end in dev mode, allow hot reloading on code changes run the `run_dev-client.bash` script.
 
 ## Troubleshooting
 
