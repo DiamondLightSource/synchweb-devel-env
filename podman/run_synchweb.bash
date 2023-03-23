@@ -98,10 +98,19 @@ fi
 if [ -d "$dls_dir" ]; then
     mountDLS="--mount type=bind,source=$dls_dir,destination=/dls"
 fi
+
+# To stop composer rate limiting you create a public github token for composer and add it to the file .ssh/id_composer
+# (see https://getcomposer.org/doc/articles/authentication-for-private-packages.md#github-oauth)
+composerTokenFile=~/.ssh/id_composer
+if [ -f "$composerTokenFile" ]; then
+    token=`cat "$composerTokenFile"`
+    COMPOSER_AUTH="{\"github-oauth\": { \"github.com\": \"$token\" } }"
+fi;
     
 echo
 echo Starting $imageName container as $imageName
-podman run --security-opt label=disable -it -p 8082:8082 -p 9003:9003\
+podman run --security-opt label=disable -it -p 8082:8082 \
+    --env COMPOSER_AUTH="$COMPOSER_AUTH" \
     --mount type=bind,source=./SynchWeb,destination=/app/SynchWeb \
     $mountDLS \
     --name=$imageName --detach \
