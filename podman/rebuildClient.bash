@@ -6,6 +6,6 @@ then
     unlink index.php
 fi
 
-npm run build:dev && export HASH=$(ls -t dist | head -n1) && ln -sf dist/${HASH}/index.html index.php
+npm run build:dev && export HASH=$(ls -t dist | head -n1 | cut -d " " -f 1) && ln -sf dist/${HASH}/index.html index.php
 cd -
 echo Web client built and linked
