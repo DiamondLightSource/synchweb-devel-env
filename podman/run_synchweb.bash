@@ -7,7 +7,8 @@ Description   : Script to run the SynchWeb in a podman container,
 Args          : -b - build the image
               : -s - copy setup scripts before run
               : -n <name> name of the container - default: 'synchweb-dev'
-              : -7 use php version 7 instead of 5.4 when building the image
+              : -7 use php version 7 when building the image (default php version)
+              : -5 use php version 5.4 when building the image
               : -d <mount directory> directory in which dls is mounted - default /dls
               : -f tail the logs after start
 Prereq: For the pod to mount the images it needs to be mounted on the host
@@ -19,10 +20,11 @@ set -e # exit immediately if any command fails
 trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 trap 'code=$?; if ! [ $code -eq 0 ]; then echo "\"${last_command}\" command failed with exit code $code."; fi' EXIT # give details of error on exit
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 buildImage=0
 initialSetUp=0
 imageName=synchweb-dev
-phpVersion="5"
+phpVersion="7"
 finalCommand=""
 dls_dir="/dls"
 getdls=0
@@ -47,6 +49,9 @@ do
             ;;
             -7)
             phpVersion="7"
+            ;;
+            -5)
+            phpVersion="5"
             ;;
             -f)
             finalCommand="logs"
@@ -74,8 +79,8 @@ fi
 echo Running podman image with name: $imageName
 
 echo Stop and remove previous container image
-podman stop --ignore synchweb-dev
-podman rm --ignore synchweb-dev
+podman stop synchweb-dev || echo "Error: Continer not existisng is ok"
+podman rm synchweb-dev || echo "Error: Container not existing is ok"
 
 if [ $initialSetUp -eq 1 ]
 then
@@ -106,13 +111,8 @@ then
     podman build . -f Dockerfile$dockerFieldSuffic --format docker -t $imageName --no-cache
 
     echo Building webpack client
-    cd SynchWeb/client
-    if [ -f index.php ]
-    then
-        unlink index.php
-    fi
-    npm run build:dev && export HASH=$(ls -t dist | head -n1) && ln -sf dist/${HASH}/index.html index.php
-    cd -
+    $SCRIPT_DIR/run_dev_client.bash -b -d
+    cd $SCRIPT_DIR
 fi
 
 # If the dls directory exists then mount it into the container
@@ -138,7 +138,7 @@ echo
 echo Starting $imageName container as $imageName
 podman run --security-opt label=disable -it -p 8082:8082 \
     --env COMPOSER_AUTH="$COMPOSER_AUTH" \
-    --mount type=bind,source=./SynchWeb,destination=/app/SynchWeb \
+    --mount type=bind,source=$SCRIPT_DIR/SynchWeb,destination=/app/SynchWeb \
     $mountDLS \
     --name=$imageName --detach \
     $imageName 
