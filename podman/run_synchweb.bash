@@ -79,8 +79,8 @@ fi
 echo Running podman image with name: $imageName
 
 echo Stop and remove previous container image
-podman stop synchweb-dev || echo "Error: Continer not existisng is ok"
-podman rm synchweb-dev || echo "Error: Container not existing is ok"
+podman stop synchweb-dev || echo "Error: But if error is container not running that is ok"
+podman rm synchweb-dev || echo "Error: But if error is container not existing that is ok"
 
 if [ $initialSetUp -eq 1 ]
 then

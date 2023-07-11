@@ -7,7 +7,7 @@ Args          : -b - build (i.e. install)
               : -ci - build and install using npm ci
               : -p - use podman for npm (default)
               : -l - use local npm
-              : -d - don't run just build (default is to run the client)
+              : -d - don't run the dev client, used with build (default is to run the dev client)
 
 Prereq: node and npm installed
 
@@ -23,7 +23,8 @@ buildImage=0
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 npm_run_dir="."
 podname=npm_build
-npm_exec="podman run --security-opt label=disable --ulimit nofile=4096:4096 --rm --name $podname --mount type=bind,source=$SCRIPT_DIR/SynchWeb,destination=/usr/src/app --workdir /usr/src/app/client -it -p 9000:9000 node:18-bullseye npm"
+node_image="node:18-bullseye"
+npm_exec="podman run --security-opt label=disable --ulimit nofile=4096:4096 --rm --name $podname --mount type=bind,source=$SCRIPT_DIR/SynchWeb,destination=/usr/src/app --workdir /usr/src/app/client -it -p 9000:9000 $node_image npm"
 host="0.0.0.0"
 dont_run=0
 test=0
