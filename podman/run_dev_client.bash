@@ -61,7 +61,7 @@ case $i in
 esac
 done
 
-if [ "$podname" = "" ]
+if [ "$podname" != "" ]
 then
     podman kill $podname | echo "."
     podman rm  $podname | echo "."
