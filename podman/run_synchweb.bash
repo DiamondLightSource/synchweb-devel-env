@@ -7,10 +7,12 @@ Description   : Script to run the SynchWeb in a podman container,
 Args          : -b - build the image
               : -s - copy setup scripts before run
               : -n <name> name of the container - default: 'synchweb-dev'
+              : -74 use php version 7.4 when building the image
               : -7 use php version 7 when building the image (default php version)
               : -5 use php version 5.4 when building the image
               : -d <mount directory> directory in which dls is mounted - default /dls
               : -f tail the logs after start
+              : -c - stay connected to console don't detach, useful for debugging composer install issue
 Prereq: For the pod to mount the images it needs to be mounted on the host
         filesystem in /dls.  You could mount this on your local filesystem 
         with sshfs, if you do make sure it is mounted with -o ro,allow_other"
@@ -28,6 +30,7 @@ phpVersion="7"
 finalCommand=""
 dls_dir="/dls"
 getdls=0
+detach="--detach"
 for i in "$@"
 do
     if [ $getdls -eq 1 ]
@@ -47,6 +50,9 @@ do
             -s)
             initialSetUp=1
             ;;
+            -74)
+            phpVersion="74"
+            ;;
             -7)
             phpVersion="7"
             ;;
@@ -58,6 +64,9 @@ do
             ;;
             -d) 
             getdls=1
+            ;;
+            -c)
+            detach=""
             ;;
             -h|--help)
             echo "$helpText"
@@ -105,8 +114,11 @@ if [ $buildImage -eq 1 ]
 then
 
     echo Building $imageName image
-    if [ "$phpVersion" = "7" ]; then
+    if [ "$phpVersion" = "74" ]; then
         dockerFieldSuffic="-7.4.dockerfile"
+    fi
+    if [ "$phpVersion" = "7" ]; then
+        dockerFieldSuffic="-7.3.dockerfile"
     fi
     podman build . -f Dockerfile$dockerFieldSuffic --format docker -t $imageName --no-cache
 
@@ -140,7 +152,7 @@ podman run --security-opt label=disable -it -p 8082:8082 \
     --env COMPOSER_AUTH="$COMPOSER_AUTH" \
     --mount type=bind,source=$SCRIPT_DIR/SynchWeb,destination=/app/SynchWeb \
     $mountDLS \
-    --name=$imageName --detach \
+    --name=$imageName $detach\
     $imageName 
 
 case "$finalCommand" in
