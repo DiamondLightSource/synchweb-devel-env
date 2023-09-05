@@ -1,4 +1,24 @@
 #!/bin/bash
+
+echo '#!/usr/bin/php
+
+<?php
+        $logfile = "/app/SynchWeb/emails.txt";
+        //* Get the email content
+        $log_output = "****" . date("Y-m-d H:i:s") . "****\r\n";
+        $handle = fopen("php://stdin", "r");
+        while(!feof($handle))
+        {
+                $buffer = trim(fgets($handle));
+                $log_output .= $buffer . "\r\n";
+        }
+        //* Write the log
+        file_put_contents($logfile, $log_output);
+?>' > /usr/sbin/sendmail
+chmod a+x /usr/sbin/sendmail
+touch /app/SynchWeb/emails.txt
+chmod a+w /app/SynchWeb/emails.txt
+
 app_home=/app/SynchWeb
 
 echo --------------------------------------------------
