@@ -109,3 +109,5 @@ vagrant/playbooks/certs/
 # .vagrant files
 .vagrant
 
+# config file with secrets in
+podman/config.php
