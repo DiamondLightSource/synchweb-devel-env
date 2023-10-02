@@ -98,4 +98,4 @@ echo Starting dev on https://localhost:9000/
 
 ipadd=`hostname -I | cut -d ' ' -f1`
 cd $npm_run_dir
-$npm_exec run serve -- --env port=9000 --env proxy.target=https://$ipadd:8082 --env host=$host
+$npm_exec run serve -- --env port=9000 --env proxy.target=https://$ipadd:8082 --env host=$host --env proxy.secure=false
