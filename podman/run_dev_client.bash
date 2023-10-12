@@ -11,7 +11,7 @@ Args          : -b - build (i.e. install)
 
 Prereq: node and npm installed
 
-Trouble shooting: Can you see http://localhost:8082 if not your synchweb pod is not running.
+Trouble shooting: Can you see https://localhost:8082 if not your synchweb pod is not running.
 "
 ############################################################
 
@@ -98,4 +98,4 @@ echo Starting dev on https://localhost:9000/
 
 ipadd=`hostname -I | cut -d ' ' -f1`
 cd $npm_run_dir
-$npm_exec run serve -- --env port=9000 --env proxy.target=http://$ipadd:8082 --env host=$host
+$npm_exec run serve -- --env port=9000 --env proxy.target=https://$ipadd:8082 --env host=$host --env proxy.secure=false

@@ -94,9 +94,8 @@ podman rm synchweb-dev || echo "Error: But if error is container not existing th
 if [ $initialSetUp -eq 1 ]
 then
     echo Running initial set up
-    if [ -f config.php ] && [ -f php-fpm.conf ] && [ -f entrypoint.bash ] && [ -f httpd.conf ]
+    if [ -f php-fpm.conf ] && [ -f entrypoint.bash ] && [ -f httpd.conf ]
     then 
-        cp config.php SynchWeb/api/
         if [ -f php.ini ]
         then
             cp php.ini SynchWeb/
@@ -104,7 +103,7 @@ then
         cp php-fpm.conf SynchWeb/
         cp entrypoint.bash SynchWeb/
     else
-        echo Missing file - need to have config.php, php-fpm.conf, entrypoint.bash and httpd.conf in this directory
+        echo Missing file - need to have php-fpm.conf, entrypoint.bash and httpd.conf in this directory
         exit 1
     fi
     chmod 755 SynchWeb/entrypoint.bash
