@@ -17,6 +17,7 @@ are almost definitely better copying a config from another developer if possible
 1. Copy the `SynchWeb\api\config_sample.php` file to `SynchWeb\api\config.php` and updated to include valid
  connection string data to an ISPyB database - i.e. via the `$isb` variable. You are almost
   definitely better copying a config from another developer if possible.
+1. Copy `SynchWeb/client/src/js/config_sample.json` to `SynchWeb/client/src/js/config.json` to use default frontend configuration
 
 This will run a container with the SynchWeb backend running and the frontend built
 and hosted on an httpd server.  This will be available at `https://localhost:8082`.
