@@ -31,7 +31,42 @@ cd podman
 ./setup_synchweb.bash
 ```
 3. Get a working `config.php` from @JPHall-DLS and copy into `podman/SynchWeb/api`
-4. In a browser go to `https://localhost:8082` note that you may have to "Accept the Risk" of an incorrect HTTPS cert
+4. Copy the folloing into `podman/SynchWeb/client/src/js/config.json`:
+```
+{
+        "apiurl": "/api",
+
+        "appurl": "",
+
+        "production": true,
+        "build": "46a96ed0",
+        "skipHome": true,
+
+        "pucks": {
+                "i02": 10,
+                "i02-2": 10,
+                "i03": 37,
+                "i04": 37,
+                "i04-1": 37,
+                "i24": 37,
+                "i23": 5,
+                "i19-1": 14,
+                "i15-1": 20
+        },
+
+        "valid_samples": true,
+
+        "_gsMajorAxisOrientation" : "Determines whether the major grid scan axis determines the orientation of the view",
+        "gsMajorAxisOrientation"  : true,
+
+        "maintenance_message": "This server is down for maintenance",
+        "maintenance": false,
+
+        "ga_ident": ""
+}
+```
+5. Re-run `./setup_synchweb.bash`
+6. In a browser go to `https://localhost:8082` note that you may have to "Accept the Risk" of an incorrect HTTPS cert
 
 ## Running on Windows
 
