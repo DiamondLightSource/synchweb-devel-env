@@ -147,7 +147,7 @@ fi;
     
 echo
 echo Starting $imageName container as $imageName
-podman run --security-opt label=disable -it -p 8082:8082 \
+podman run --privileged --security-opt label=disable -it -p 8082:8082 \
     --env COMPOSER_AUTH="$COMPOSER_AUTH" \
     --mount type=bind,source=$SCRIPT_DIR/SynchWeb,destination=/app/SynchWeb \
     $mountDLS \

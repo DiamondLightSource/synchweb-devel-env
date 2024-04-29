@@ -22,6 +22,56 @@ This will run a container with the SynchWeb backend running and the frontend bui
 and hosted on an httpd server.  This will be available at `https://localhost:8082`.
 The actual SynchWeb code will be downloaded locally and mounted into the container.
 
+## Setup on a Diamond Workstation
+1. Clone this repository: `git clone https://github.com/DiamondLightSource/synchweb-devel-env.git`
+1. This just clones the dev environment wrapper, to then clone the code run:
+```
+cd podman
+git clone git@github.com:DiamondLightSource/SynchWeb.git
+```
+3. Get a working `config.php` from @JPHall-DLS and copy into `podman/SynchWeb/api`
+4. Copy the following into `podman/SynchWeb/client/src/js/config.json`:
+```
+{
+        "apiurl": "/api",
+
+        "appurl": "",
+
+        "production": true,
+        "build": "46a96ed0",
+        "skipHome": true,
+
+        "pucks": {
+                "i02": 10,
+                "i02-2": 10,
+                "i03": 37,
+                "i04": 37,
+                "i04-1": 37,
+                "i24": 37,
+                "i23": 5,
+                "i19-1": 14,
+                "i15-1": 20
+        },
+
+        "valid_samples": true,
+
+        "_gsMajorAxisOrientation" : "Determines whether the major grid scan axis determines the orientation of the view",
+        "gsMajorAxisOrientation"  : true,
+
+        "maintenance_message": "This server is down for maintenance",
+        "maintenance": false,
+
+        "ga_ident": ""
+}
+```
+5. Run:
+```
+module load node
+./setup_synchweb.bash
+```
+6. You make get errors around `apt-get` not found and hanging on obtaining `date-fns`. In both cases, killing it and starting it again will get it to carry on.
+7. In a browser go to `https://localhost:8082` note that you may have to "Accept the Risk" of an incorrect HTTPS cert
+
 ## Running on Windows
 
 The devenv can be set up to run on Windows using WSL (Windows Subsystem for Linux).  Set this up
