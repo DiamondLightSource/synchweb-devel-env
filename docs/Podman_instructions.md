@@ -24,14 +24,13 @@ The actual SynchWeb code will be downloaded locally and mounted into the contain
 
 ## Setup on a Diamond Workstation
 1. Clone this repository: `git clone https://github.com/DiamondLightSource/synchweb-devel-env.git`
-1. Run:
+1. This just clones the dev environment wrapper, to then clone the code run:
 ```
-module load node
 cd podman
-./setup_synchweb.bash
+git clone git@github.com:DiamondLightSource/SynchWeb.git
 ```
 3. Get a working `config.php` from @JPHall-DLS and copy into `podman/SynchWeb/api`
-4. Copy the folloing into `podman/SynchWeb/client/src/js/config.json`:
+4. Copy the following into `podman/SynchWeb/client/src/js/config.json`:
 ```
 {
         "apiurl": "/api",
@@ -65,8 +64,13 @@ cd podman
         "ga_ident": ""
 }
 ```
-5. Re-run `./setup_synchweb.bash`
-6. In a browser go to `https://localhost:8082` note that you may have to "Accept the Risk" of an incorrect HTTPS cert
+5. Run:
+```
+module load node
+./setup_synchweb.bash
+```
+6. You make get errors around `apt-get` not found and hanging on obtaining `date-fns`. In both cases, killing it and starting it again will get it to carry on.
+7. In a browser go to `https://localhost:8082` note that you may have to "Accept the Risk" of an incorrect HTTPS cert
 
 ## Running on Windows
 
