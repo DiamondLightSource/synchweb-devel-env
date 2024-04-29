@@ -22,6 +22,17 @@ This will run a container with the SynchWeb backend running and the frontend bui
 and hosted on an httpd server.  This will be available at `https://localhost:8082`.
 The actual SynchWeb code will be downloaded locally and mounted into the container.
 
+## Setup on a Diamond Workstation
+1. Clone this repository: `git clone https://github.com/DiamondLightSource/synchweb-devel-env.git`
+1. Run:
+```
+module load node
+cd podman
+./setup_synchweb.bash
+```
+3. Get a working `config.php` from @JPHall-DLS and copy into `podman/SynchWeb/api`
+4. In a browser go to `https://localhost:8082` note that you may have to "Accept the Risk" of an incorrect HTTPS cert
+
 ## Running on Windows
 
 The devenv can be set up to run on Windows using WSL (Windows Subsystem for Linux).  Set this up
