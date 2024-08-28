@@ -50,6 +50,9 @@ do
             -s)
             initialSetUp=1
             ;;
+            -8)
+            phpVersion="8"
+            ;;
             -74)
             phpVersion="74"
             ;;
@@ -113,6 +116,9 @@ if [ $buildImage -eq 1 ]
 then
 
     echo Building $imageName image
+    if [ "$phpVersion" = "8" ]; then
+        dockerFieldSuffic="-8.dockerfile"
+    fi
     if [ "$phpVersion" = "74" ]; then
         dockerFieldSuffic="-7.4.dockerfile"
     fi
