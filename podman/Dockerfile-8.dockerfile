@@ -4,7 +4,7 @@ WORKDIR /app
  
 # Install httpd, PHP, git and required dependencies
 RUN dnf module enable php:7.4 -y && \
-    yum install -y wget git tar xz httpd mod_ssl && \
+    yum install -y wget git tar xz httpd mod_ssl zip unzip php-zip && \
     yum install -y php php-mysqlnd php-mbstring php-xml php-gd php-fpm php-cli php-ldap
  
 # Install Composer

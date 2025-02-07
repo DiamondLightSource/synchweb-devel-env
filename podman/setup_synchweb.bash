@@ -38,7 +38,7 @@ else
     echo Will NOT run initial set up
 fi
 
-installCmd="sudo apt-get -y"
+installCmd="sudo dnf -y"
 if [ $3 ]
 then
     installCmd=$3
