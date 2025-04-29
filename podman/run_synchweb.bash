@@ -7,8 +7,9 @@ Description   : Script to run the SynchWeb in a podman container,
 Args          : -b - build the image
               : -s - copy setup scripts before run
               : -n <name> name of the container - default: 'synchweb-dev'
+              : -8 use RockyLinux 8 and PHP 7.4 when building the image (default)
               : -74 use php version 7.4 when building the image
-              : -7 use php version 7 when building the image (default php version)
+              : -7 use php version 7 when building the image
               : -5 use php version 5.4 when building the image
               : -d <mount directory> directory in which dls is mounted - default /dls
               : -f tail the logs after start
@@ -26,7 +27,7 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 buildImage=0
 initialSetUp=0
 imageName=synchweb-dev
-phpVersion="7"
+phpVersion="8"
 finalCommand=""
 dls_dir="/dls"
 getdls=0
