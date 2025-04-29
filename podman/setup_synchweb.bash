@@ -6,7 +6,7 @@ helpText="
                   Note, the config.php file should be setup appropriately before running.
 # Args          : $1 - name of podman image to create and run - default: 'synchweb-dev', 
 #               : $2 - run initial container setup - default:'1' (run set up)
-#               : $3 - install command to use - default:\"sudo apt-get -y\" - adjust for 
+#               : $3 - install command to use - default:\"sudo dnf -y\" - adjust for 
                        different linux distros"
 ############################################################
 
@@ -38,7 +38,7 @@ else
     echo Will NOT run initial set up
 fi
 
-installCmd="sudo apt-get -y"
+installCmd="sudo dnf -y"
 if [ $3 ]
 then
     installCmd=$3
